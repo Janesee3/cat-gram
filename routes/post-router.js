@@ -53,7 +53,9 @@ router.delete("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findByIdAndDelete(req.params.id);
 		if (!post) return fireNotFoundError(res, next);
-		res.json(post);
+		res.json({
+			message: `Successfully deleted post with ID ${req.params.id}.`
+		});
 	} catch (err) {
 		handleError(res, err, next);
 	}

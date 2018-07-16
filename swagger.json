@@ -251,16 +251,16 @@
         }
       },
       "delete": {
-        "summary": "Delete carpark with the specified id",
+        "summary": "Delete post with the specified id",
         "tags": [
-          "carparks"
+          "posts"
         ],
         "parameters": [
           {
-            "name": "carpark_id",
+            "name": "post_id",
             "in": "path",
             "required": true,
-            "description": "The id of the carpark to be deleted",
+            "description": "The id of the post to be deleted",
             "schema": {
               "type": "string"
             }
@@ -268,28 +268,31 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful delete",
+            "description": "Post is successfully deleted",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "message": "Successfully deleted carpark 'Y1'!"
+                    "message": "Successfully deleted post with ID 5b4c383b6eb02e0a56534c6e"
                   }
                 }
               }
             }
           },
           "404": {
-            "description": "Carpark not found",
+            "description": "Post not found",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "message": "Cannot find carpark with this id!"
+                    "message": "Cannot find post with this id!"
                   }
                 }
               }
             }
+          },
+          "500": {
+            "description": "Invalid post id parameter"
           }
         }
       }
