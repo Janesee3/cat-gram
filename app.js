@@ -4,6 +4,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
 const postRouter = require("./routes/post-router");
+const userRouter = require("./routes/user-router");
 
 const Post = require("./models/Post");
 const User = require("./models/User");
@@ -44,11 +45,12 @@ app.use(function(req, res, next) {
 	next();
 });
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// Custom Routers
 app.get("/", (req, res, next) => {
 	res.json("hello");
 });
-
-// Custom Routers
+userRouter(app);
 postRouter(app);
 
 // general 404 error handler
