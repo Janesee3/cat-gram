@@ -32,12 +32,7 @@ router.post("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findById(req.params.id).populate("author");
-		if (!post)
-			return handleError(
-				res,
-				{ name: "NotFoundError", message: "Cannot find post with this id!" },
-				next
-			);
+		if (!post) return fireNotFoundError(res, next);
 		res.json(post);
 	} catch (err) {
 		handleError(res, err, next);
@@ -47,23 +42,36 @@ router.get("/:id", async (req, res, next) => {
 router.put("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findByIdAndUpdate(req.params.id, req.body);
-		if (!post)
-			return handleError(
-				res,
-				{ name: "NotFoundError", message: "Cannot find post with this id!" },
-				next
-			);
-        res.json(post);
+		if (!post) return fireNotFoundError(res, next);
+		res.json(post);
 	} catch (err) {
 		handleError(res, err, next);
 	}
 });
 
+router.delete("/:id", async (req, res, next) => {
+	try {
+		let post = await Post.findByIdAndDelete(req.params.id);
+		if (!post) return fireNotFoundError(res, next);
+		res.json(post);
+	} catch (err) {
+		handleError(res, err, next);
+	}
+});
+
+const fireNotFoundError = (res, next) => {
+	return handleError(
+		res,
+		{ name: "NotFoundError", message: "Cannot find post with this id!" },
+		next
+	);
+};
+
 const handleError = (res, err, next) => {
 	if (err.name === "ValidationError") {
-        // will enter here for CastError and ValidatorError (custom, required and unique validators)
-        // for operations involving writing to db
-        res.status(400).json(err.message);
+		// will enter here for CastError and ValidatorError (custom, required and unique validators)
+		// for operations involving writing to db
+		res.status(400).json(err.message);
 		return;
 	}
 
