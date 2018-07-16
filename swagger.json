@@ -2,11 +2,11 @@
     "openapi": "3.0.0",
     "info": {
       "version": "1.0.0",
-      "title": "Carparks in Singapore API"
+      "title": "Catgram API"
     },
     "servers": [
       {
-        "url": "https://cat-carparks.herokuapp.com/"
+        "url": "https://cat-gram.herokuapp.com/"
       }
     ],
     "paths": {
