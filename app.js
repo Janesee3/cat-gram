@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
+const postRouter = require("./routes/post-router");
+
 const Post = require("./models/Post");
 const User = require("./models/User");
 
@@ -38,5 +40,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/", (req, res, next) => {
 	res.json("hello");
 });
+postRouter(app);
 
 module.exports = app;
