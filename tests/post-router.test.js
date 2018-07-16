@@ -132,19 +132,19 @@ describe("PUT /posts/id", () => {
 		expect(newPost.caption).toBe(UPDATED_CAPTION);
 	});
 
-	// it("should return status 404 when given a post ID that doesnt exist", async () => {
-	// 	let testId = "5b4c383b6eb02e0a56534c6d";
-	// 	let response = await request(app).get(`/posts/${testId}`);
+	it("should return status 404 when given a post ID that doesnt exist", async () => {
+		let testId = "5b4c383b6eb02e0a56534c6d";
+		let response = await request(app).put(`/posts/${testId}`);
 
-	// 	expect(response.status).toBe(404);
-	// });
+		expect(response.status).toBe(404);
+	});
 
-	// it("should return status 500 when given a post ID that is invalid", async () => {
-	// 	let testId = "invalid id";
-	// 	let response = await request(app).get(`/posts/${testId}`);
+	it("should return status 500 when given a post ID that is invalid", async () => {
+		let testId = "invalid id";
+		let response = await request(app).get(`/posts/${testId}`);
 
-	// 	expect(response.status).toBe(500);
-	// });
+		expect(response.status).toBe(500);
+	});
 });
 
 // UTILITY METHODS FOR MOCK DATA

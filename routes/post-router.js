@@ -47,16 +47,15 @@ router.get("/:id", async (req, res, next) => {
 router.put("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findByIdAndUpdate(req.params.id, req.body);
-		// if (!post)
-		// 	return handleError(
-		// 		res,
-		// 		{ name: "NotFoundError", message: "Cannot find post with this id!" },
-		// 		next
-		// 	);
+		if (!post)
+			return handleError(
+				res,
+				{ name: "NotFoundError", message: "Cannot find post with this id!" },
+				next
+			);
         res.json(post);
-        
 	} catch (err) {
-		//handleError(res, err, next);
+		handleError(res, err, next);
 	}
 });
 
