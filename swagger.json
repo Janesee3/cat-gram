@@ -190,30 +190,29 @@
         }
       },
       "put": {
-        "summary": "Update carpark with the specified id",
+        "summary": "Update post with the specified id",
         "tags": [
-          "carparks"
+          "posts"
         ],
         "parameters": [
           {
-            "name": "carpark_id",
+            "name": "post_id",
             "in": "path",
             "required": true,
-            "description": "The case-sensitive id of the carpark to update",
+            "description": "The id of the post to update",
             "schema": {
               "type": "string"
             }
           }
         ],
         "requestBody": {
-          "description": "Updated fields for carpark",
+          "description": "Updated fields for post",
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "example": {
-                  "car_park_no": "TEST",
-                  "address": "Test Address"
+                  "caption": "Newly updated caption!"
                 }
               }
             }
@@ -221,48 +220,33 @@
         },
         "responses": {
           "200": {
-            "description": "Carpark object with the updated fields",
+            "description": "Post object with the updated fields",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "car_park_no": "TEST",
-                      "address": "Updated Address",
-                      "x_coord": "1953",
-                      "y_coord": "7266",
-                      "car_park_type": "SURFACE CAR PARK",
-                      "type_of_parking_system": "ELECTRONIC PARKING",
-                      "short_term_parking": "WHOLE DAY",
-                      "free_parking": "SUN & PH FR 7AM-10.30PM",
-                      "night_parking": "YES"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Request body is not a valid update",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "message": "The given fields to be updated are invalid!"
+                    "author": "5b4c383b6eb02e0a56534c6g",
+                    "caption": "Newly Updated caption!",
+                    "image": "https://sampleurl.com"
                   }
                 }
               }
             }
           },
           "404": {
-            "description": "Carpark not found",
+            "description": "Post not found",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "message": "Cannot find carpark with this id!"
+                    "message": "Cannot find post with this id!"
                   }
                 }
               }
             }
+          },
+           "500": {
+            "description": "Invalid post id parameter"
           }
         }
       },
