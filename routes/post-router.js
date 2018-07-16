@@ -10,7 +10,7 @@ router.get("/", async (req, res, next) => {
 		const posts = await Post.find().populate("author"); // 'author' here refers to the KEY name inside the Post model!
 		res.json(posts);
 	} catch (err) {
-		next(err);
+		handleError(res, err, next);
 	}
 });
 
@@ -25,9 +25,17 @@ router.post("/", async (req, res, next) => {
 		await newPost.save();
 		res.status(201).json({ message: `Successfully created a new post.` });
 	} catch (err) {
-		next(err);
+		return handleError(res, err, next);
 	}
 });
+
+const handleError = (res, err, next) => {
+	if (err.name === "ValidationError") { // will enter here for CastError and ValidatorError (custom, required and unique validators)
+		res.status(400).json(err.message);
+	} else {
+		next(err);
+	}
+};
 
 module.exports = app => {
 	app.use("/posts", router);

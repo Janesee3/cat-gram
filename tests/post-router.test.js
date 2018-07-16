@@ -56,6 +56,41 @@ describe("POST /posts", () => {
 		const posts = await Post.find();
 		expect(posts.length).toBe(3); // increased by 1
 	});
+
+	it("should return status 400 when given an invalid request body that lacks any of the required fields", async () => {
+		let response = await request(app)
+			.post("/posts")
+			.send({
+				caption: "Hello im a test post",
+				image: "https://sampleurl.com"
+			});
+
+		expect(response.status).toBe(400);
+	});
+
+	it("should return status 400 when given an invalid author ID type", async () => {
+		let response = await request(app)
+			.post("/posts")
+			.send({
+				author: "invalid-one",
+				caption: "Hello im a test post",
+				image: "https://sampleurl.com"
+			});
+
+		expect(response.status).toBe(400);
+	});
+
+	it("should return status 400 when given an author ID that does not exists", async () => {
+		let response = await request(app)
+			.post("/posts")
+			.send({
+				author: "5b4c38193a68d009eb5fb3c9",
+				caption: "Hello im a test post",
+				image: "https://sampleurl.com"
+			});
+
+		expect(response.status).toBe(400);
+	});
 });
 
 // UTILITY METHODS FOR MOCK DATA
