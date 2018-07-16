@@ -35,11 +35,22 @@ db.on("error", error => {
 const app = express();
 
 app.use(express.json());
-
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get("/", (req, res, next) => {
 	res.json("hello");
 });
+
+// Custom Routers
 postRouter(app);
+
+// general 404 error handler
+app.use((req, res, next) => {
+	res.status(404).json("Page Not Found!");
+});
+
+// general 500 error handler
+app.use((err, req, res, next) => {
+	res.status(500).json(err);
+});
 
 module.exports = app;
