@@ -3,12 +3,23 @@ const mongoose = require("mongoose");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
+const Post = require("./models/Post");
+
 // Open DB connection
 mongoose.connect("mongodb://localhost/cat-gram");
 const db = mongoose.connection;
 db.on("error", error => {
 	console.error("An error occurred!", error);
 });
+
+// const samplePost = new Post({
+// 	author: "Ms Cat",
+// 	caption: "Im just a cat",
+// 	image: "http://sampleurl.com",
+// 	likes: 10
+// });
+
+// samplePost.save();
 
 const app = express();
 
