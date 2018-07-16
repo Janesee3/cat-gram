@@ -1,188 +1,129 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "version": "1.0.0",
-      "title": "Catgram API"
-    },
-    "servers": [
-      {
-        "url": "https://cat-gram.herokuapp.com/"
-      }
-    ],
-    "paths": {
-      "/carparks": {
-        "get": {
-          "summary": "List all carparks in singapore",
-          "tags": [
-            "carparks"
-          ],
-          "responses": {
-            "200": {
-              "description": "An array of carparks",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": [
-                      {
-                        "car_park_no": "ACB",
-                            "address": "BLK 270/271 ALBERT CENTRE BASEMENT CAR PARK",
-                            "x_coord": "30314.7936",
-                            "y_coord": "31490.4942",
-                            "car_park_type": "BASEMENT CAR PARK",
-                            "type_of_parking_system": "ELECTRONIC PARKING",
-                            "short_term_parking": "WHOLE DAY",
-                            "free_parking": "NO",
-                            "night_parking": "YES"
-                      },
-                      {
-                        "car_park_no": "ACM",
-                            "address": "BLK 98A ALJUNIED CRESCENT",
-                            "x_coord": "33758.4143",
-                            "y_coord": "33695.5198",
-                            "car_park_type": "MULTI-STOREY CAR PARK",
-                            "type_of_parking_system": "ELECTRONIC PARKING",
-                            "short_term_parking": "WHOLE DAY",
-                            "free_parking": "SUN & PH FR 7AM-10.30PM",
-                            "night_parking": "YES"
-                      }
-                    ]
-                  }
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Catgram API"
+  },
+  "servers": [
+    {
+      "url": "https://cat-gram.herokuapp.com/"
+    }
+  ],
+  "paths": {
+    "/posts": {
+      "get": {
+        "summary": "List of all available posts",
+        "tags": [
+          "posts"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "author": "5b4c383b6eb02e0a56534c6g",
+                      "caption": "Cheesy caption for post1",
+                      "image": "https://sampleurl.com"
+                    },
+                    {
+                      "author": "5b4c383b6eb02e0a56334c6d",
+                      "caption": "Meow meow caption",
+                      "image": "https://sampleurl.com"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a post",
+        "tags": [
+          "posts"
+        ],
+        "requestBody": {
+          "description": "Post object to be added",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "author": "5b4c383b6eb02e0a56534c6g",
+                  "caption": "My new post",
+                  "image": "https://sampleurl.com"
                 }
               }
             }
           }
         },
-        "post": {
-          "summary": "Create a carpark entry",
-          "tags": [
-            "carparks"
-          ],
-          "requestBody": {
-            "description": "Carpark object to be added",
-            "required": true,
+        "responses": {
+          "201": {
+            "description": "Post created successfully."
+          },
+          "400": {
+            "description": "Request body is not a valid Post object"
+          }
+        }
+      }
+    },
+    "/carparks/search": {
+      "get": {
+        "summary": "Search for carparks",
+        "tags": [
+          "carparks"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keyword",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The search keyword that will be matched against the address fields of the carparks"
+          },
+          {
+            "in": "query",
+            "name": "carparkType",
+            "schema": {
+              "type": "string",
+              "enum": ["basement", "surface", "multistorey", "mechanised", "covered", "mechanised_and_surface", "surface_and_multistorey"]
+            },
+            "description": "The type of carpark to search for"
+            
+          },
+          {
+            "in": "query",
+            "name": "systemType",
+            "schema": {
+              "type": "string",
+              "enum": ["electronic", "coupon"]
+            },
+            
+            "description": "The type of the carpark system to search for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of carparks that matches the search",
             "content": {
               "application/json": {
                 "schema": {
-                  "example": {
-                    "car_park_no": "TEST",
-                    "address": "Test Address",
-                    "x_coord": "1953",
-                    "y_coord": "7266",
-                    "car_park_type": "SURFACE CAR PARK",
-                    "type_of_parking_system": "ELECTRONIC PARKING",
-                    "short_term_parking": "WHOLE DAY",
-                    "free_parking": "SUN & PH FR 7AM-10.30PM",
-                    "night_parking": "YES"
-                  }
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "Successfully created carpark"
-            },
-            "400": {
-              "description": "Request body is not a valid carpark object, or a carpark with that id already exists."
-            }
-          }
-        }
-      },
-      "/carparks/search": {
-        "get": {
-          "summary": "Search for carparks",
-          "tags": [
-            "carparks"
-          ],
-          "parameters": [
-            {
-              "in": "query",
-              "name": "keyword",
-              "schema": {
-                "type": "string"
-              },
-              "description": "The search keyword that will be matched against the address fields of the carparks"
-            },
-            {
-              "in": "query",
-              "name": "carparkType",
-              "schema": {
-                "type": "string",
-                "enum": ["basement", "surface", "multistorey", "mechanised", "covered", "mechanised_and_surface", "surface_and_multistorey"]
-              },
-              "description": "The type of carpark to search for"
-              
-            },
-            {
-              "in": "query",
-              "name": "systemType",
-              "schema": {
-                "type": "string",
-                "enum": ["electronic", "coupon"]
-              },
-              
-              "description": "The type of the carpark system to search for"
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "List of carparks that matches the search",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": [{
-                      "car_park_no": "B67",
-                          "address": "BLK 649A JALAN TENAGA",
-                          "x_coord": "36132.6219",
-                          "y_coord": "34913.1736",
-                          "car_park_type": "MULTI-STOREY CAR PARK",
-                          "type_of_parking_system": "ELECTRONIC PARKING",
-                          "short_term_parking": "WHOLE DAY",
-                          "free_parking": "SUN & PH FR 7AM-10.30PM",
-                          "night_parking": "YES"
-                    },{
-                          "car_park_no": "B72",
-                          "address": "BLK 660A JALAN TENAGA",
-                          "x_coord": "36243.3489",
-                          "y_coord": "35174.2762",
-                          "car_park_type": "MULTI-STOREY CAR PARK",
-                          "type_of_parking_system": "ELECTRONIC PARKING",
-                          "short_term_parking": "WHOLE DAY",
-                          "free_parking": "SUN & PH FR 7AM-10.30PM",
-                          "night_parking": "YES"
-                      }]
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "/carparks/{carpark_id}": {
-        "get": {
-          "summary": "Retrieve a carpark of that id ",
-          "tags": [
-            "carparks"
-          ],
-          "parameters": [
-            {
-              "name": "carpark_id",
-              "in": "path",
-              "required": true,
-              "description": "The case-sensitive id of the carpark to retrieve",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Carpark object of the given id",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": {
-                      "car_park_no": "B72",
+                  "example": [{
+                    "car_park_no": "B67",
+                        "address": "BLK 649A JALAN TENAGA",
+                        "x_coord": "36132.6219",
+                        "y_coord": "34913.1736",
+                        "car_park_type": "MULTI-STOREY CAR PARK",
+                        "type_of_parking_system": "ELECTRONIC PARKING",
+                        "short_term_parking": "WHOLE DAY",
+                        "free_parking": "SUN & PH FR 7AM-10.30PM",
+                        "night_parking": "YES"
+                  },{
+                        "car_park_no": "B72",
                         "address": "BLK 660A JALAN TENAGA",
                         "x_coord": "36243.3489",
                         "y_coord": "35174.2762",
@@ -191,139 +132,176 @@
                         "short_term_parking": "WHOLE DAY",
                         "free_parking": "SUN & PH FR 7AM-10.30PM",
                         "night_parking": "YES"
-                    }
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Carpark not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": {
-                      "message": "Cannot find carpark with this id!"
-                    }
-                  }
+                    }]
                 }
               }
             }
           }
-        },
-        "put": {
-          "summary": "Update carpark with the specified id",
-          "tags": [
-            "carparks"
-          ],
-          "parameters": [
-            {
-              "name": "carpark_id",
-              "in": "path",
-              "required": true,
-              "description": "The case-sensitive id of the carpark to update",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "requestBody": {
-            "description": "Updated fields for carpark",
+        }
+      }
+    },
+    "/posts/{post_id}": {
+      "get": {
+        "summary": "Retrieve a post of that id ",
+        "tags": [
+          "posts"
+        ],
+        "parameters": [
+          {
+            "name": "post_id",
+            "in": "path",
             "required": true,
+            "description": "The id of the post to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post object of the given id",
             "content": {
               "application/json": {
                 "schema": {
                   "example": {
-                    "car_park_no": "TEST",
-                    "address": "Test Address"
+                    "author": "5b4c383b6eb02e0a56534c6g",
+                    "caption": "My Cheesy Caption",
+                    "image": "https://sampleurl.com"
                   }
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Carpark object with the updated fields",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": {
-                      "car_park_no": "TEST",
-                        "address": "Updated Address",
-                        "x_coord": "1953",
-                        "y_coord": "7266",
-                        "car_park_type": "SURFACE CAR PARK",
-                        "type_of_parking_system": "ELECTRONIC PARKING",
-                        "short_term_parking": "WHOLE DAY",
-                        "free_parking": "SUN & PH FR 7AM-10.30PM",
-                        "night_parking": "YES"
-                    }
+          "404": {
+            "description": "Post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Cannot find post with this id!"
                   }
                 }
               }
-            },
-            "400": {
-              "description": "Request body is not a valid update",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": {
-                      "message": "The given fields to be updated are invalid!"
-                    }
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "Carpark not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": {
-                      "message": "Cannot find carpark with this id!"
-                    }
-                  }
+            }
+          },
+          "500": {
+            "description": "Invalid post id parameter"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update carpark with the specified id",
+        "tags": [
+          "carparks"
+        ],
+        "parameters": [
+          {
+            "name": "carpark_id",
+            "in": "path",
+            "required": true,
+            "description": "The case-sensitive id of the carpark to update",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated fields for carpark",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "car_park_no": "TEST",
+                  "address": "Test Address"
                 }
               }
             }
           }
         },
-        "delete": {
-          "summary": "Delete carpark with the specified id",
-          "tags": [
-            "carparks"
-          ],
-          "parameters": [
-            {
-              "name": "carpark_id",
-              "in": "path",
-              "required": true,
-              "description": "The id of the carpark to be deleted",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "Successful delete",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": {
-                      "message": "Successfully deleted carpark 'Y1'!"
-                    }
+        "responses": {
+          "200": {
+            "description": "Carpark object with the updated fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "car_park_no": "TEST",
+                      "address": "Updated Address",
+                      "x_coord": "1953",
+                      "y_coord": "7266",
+                      "car_park_type": "SURFACE CAR PARK",
+                      "type_of_parking_system": "ELECTRONIC PARKING",
+                      "short_term_parking": "WHOLE DAY",
+                      "free_parking": "SUN & PH FR 7AM-10.30PM",
+                      "night_parking": "YES"
                   }
                 }
               }
-            },
-            "404": {
-              "description": "Carpark not found",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "example": {
-                      "message": "Cannot find carpark with this id!"
-                    }
+            }
+          },
+          "400": {
+            "description": "Request body is not a valid update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "The given fields to be updated are invalid!"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Carpark not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Cannot find carpark with this id!"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete carpark with the specified id",
+        "tags": [
+          "carparks"
+        ],
+        "parameters": [
+          {
+            "name": "carpark_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the carpark to be deleted",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful delete",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Successfully deleted carpark 'Y1'!"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Carpark not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Cannot find carpark with this id!"
                   }
                 }
               }
@@ -333,3 +311,4 @@
       }
     }
   }
+}
