@@ -14,13 +14,13 @@ postRouter(app);
 const mockUsers = {};
 const mockPosts = {};
 
+/**** SETUP ***/
+
 beforeAll(async () => {
 	jest.setTimeout(120000);
 
 	const uri = await mongod.getConnectionString();
 	await mongoose.connect(uri);
-
-	await addFakeData();
 });
 
 afterAll(() => {
@@ -28,11 +28,34 @@ afterAll(() => {
 	mongod.stop();
 });
 
+beforeEach(async () => {
+	mongoose.connection.db.dropDatabase();
+	await addFakeData();
+});
+
+/****  TEST CASES *****/
+
 it("GET /posts should return message", async () => {
 	let response = await request(app).get("/posts");
 
 	expect(response.status).toBe(200);
 	expect(response.body.length).toBe(2);
+});
+
+describe("POST /posts", () => {
+	it("should return status 201 when given a valid request body, and increment list of posts by 1", async () => {
+		let response = await request(app)
+			.post("/posts")
+			.send({
+				author: mockUsers.user1._id,
+				caption: "Hello im a test post",
+				image: "https://sampleurl.com"
+			});
+
+		expect(response.status).toBe(201);
+		const posts = await Post.find();
+		expect(posts.length).toBe(3); // increased by 1
+	});
 });
 
 // UTILITY METHODS FOR MOCK DATA
