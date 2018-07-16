@@ -41,6 +41,112 @@ it("should pass", async () => {
 	expect(res.body).toBe("hello");
 });
 
+describe("POST /users", () => {
+	it("should return status 201 when given a valid request body, and increment list of users by 1", async () => {
+		let response = await request(app)
+			.post("/users")
+			.send({
+                username: "test user",
+                bio: "hello im a test user"
+			});
+
+		expect(response.status).toBe(201);
+		const users = await User.find();
+		expect(users.length).toBe(3); // increased by 1
+	});
+
+	it("should return status 400 when given an invalid request body that lacks any of the required fields", async () => {
+		let response = await request(app)
+			.post("/users")
+			.send({
+                bio: "hello im a test user"
+			});
+
+		expect(response.status).toBe(400);
+	});
+
+    // TODO: Test case for non-unique username
+});
+
+describe("GET /users/id", () => {
+	it("should return status 200 when given a valid posusert ID", async () => {
+		let testId = mockUsers.user1._id.toString();
+		let response = await request(app).get(`/users/${testId}`);
+
+		expect(response.body._id).toBe(testId);
+	});
+
+	it("should return status 404 when given a user ID that doesnt exist", async () => {
+		let testId = "5b4c383b6eb02e0a56534c6d";
+		let response = await request(app).get(`/users/${testId}`);
+
+		expect(response.status).toBe(404);
+	});
+
+	it("should return status 500 when given a post ID that is invalid", async () => {
+		let testId = "invalid id";
+		let response = await request(app).get(`/users/${testId}`);
+
+		expect(response.status).toBe(500);
+	});
+});
+
+describe("PUT /users/id", () => {
+	it("should return status 200 and correctly update the post object when given a valid user ID", async () => {
+		let UPDATED_BIO = "My New Bio!";
+		let testId = mockUsers.post1._id.toString();
+
+		let response = await request(app)
+			.put(`/users/${testId}`)
+			.send({
+				caption: UPDATED_BIO
+			});
+
+		expect(response.status).toBe(200);
+		let newUser = await User.findById(testId);
+		expect(newUser.bio).toBe(UPDATED_BIO);
+	});
+
+	it("should return status 404 when given a user ID that doesnt exist", async () => {
+		let testId = "5b4c383b6eb02e0a56534c6d";
+		let response = await request(app).put(`/users/${testId}`);
+
+		expect(response.status).toBe(404);
+	});
+
+	it("should return status 500 when given a post ID that is invalid", async () => {
+		let testId = "invalid id";
+		let response = await request(app).get(`/users/${testId}`);
+
+		expect(response.status).toBe(500);
+	});
+});
+
+describe("DELETE /users/id", () => {
+	it("should return status 200 and remove the post object when given a valid user ID", async () => {
+		let testId = mockUsers.user1._id.toString();
+
+		let response = await request(app).delete(`/users/${testId}`);
+
+		expect(response.status).toBe(200);
+		expect(await User.findById(testId)).toBe(null);
+	});
+
+	it("should return status 404 when given a puserost ID that doesnt exist", async () => {
+		let testId = "5b4c383b6eb02e0a56534c6d";
+		let response = await request(app).delete(`/users/${testId}`);
+
+		expect(response.status).toBe(404);
+	});
+
+	it("should return status 500 when given a user ID that is invalid", async () => {
+		let testId = "invalid id";
+		let response = await request(app).delete(`/users/${testId}`);
+
+		expect(response.status).toBe(500);
+	});
+});
+
 /** UTILITY METHODS FOR MOCK DATA **/
 
 const _addMockUsers = async () => {
