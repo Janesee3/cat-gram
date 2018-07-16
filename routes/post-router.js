@@ -10,7 +10,7 @@ router.get("/", async (req, res, next) => {
 		const posts = await Post.find().populate("author"); // 'author' here refers to the KEY name inside the Post model!
 		res.json(posts);
 	} catch (err) {
-		handleError(res, err, next);
+		return handleError(res, err, next);
 	}
 });
 
@@ -29,12 +29,35 @@ router.post("/", async (req, res, next) => {
 	}
 });
 
-const handleError = (res, err, next) => {
-	if (err.name === "ValidationError") { // will enter here for CastError and ValidatorError (custom, required and unique validators)
-		res.status(400).json(err.message);
-	} else {
-		next(err);
+router.get("/:id", async (req, res, next) => {
+	try {
+		let post = await Post.findById(req.params.id).populate("author");
+		if (!post)
+			return handleError(
+				res,
+				{ name: "NotFoundError", message: "Cannot find post with this id!" },
+				next
+			);
+		res.json(post);
+	} catch (err) {
+		handleError(res, err, next);
 	}
+});
+
+const handleError = (res, err, next) => {
+	if (err.name === "ValidationError") {
+        // will enter here for CastError and ValidatorError (custom, required and unique validators)
+        // for operations involving writing to db
+        res.status(400).json(err.message);
+		return;
+	}
+
+	if (err.name === "NotFoundError") {
+		res.status(404).json(err.message);
+		return;
+	}
+
+	next(err);
 };
 
 module.exports = app => {

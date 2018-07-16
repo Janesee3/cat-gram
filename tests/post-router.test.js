@@ -93,6 +93,29 @@ describe("POST /posts", () => {
 	});
 });
 
+describe("GET /posts/id", () => {
+	it("should return status 200 when given a valid post ID", async () => {
+		let testId = mockPosts.post1._id.toString();
+		let response = await request(app).get(`/posts/${testId}`);
+
+		expect(response.body._id).toBe(testId);
+	});
+
+	it("should return status 404 when given a post ID that doesnt exist", async () => {
+		let testId = "5b4c383b6eb02e0a56534c6d";
+		let response = await request(app).get(`/posts/${testId}`);
+
+		expect(response.status).toBe(404);
+	});
+
+	it("should return status 500 when given a post ID that is invalid", async () => {
+		let testId = "invalid id";
+		let response = await request(app).get(`/posts/${testId}`);
+
+		expect(response.status).toBe(500);
+	});
+});
+
 // UTILITY METHODS FOR MOCK DATA
 
 const _addMockUsers = async () => {
