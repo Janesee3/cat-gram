@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
-const mongoose = require("mongoose");
+const errorHandler = require("../middlewares/mongoose-error-handler");
 
 router.use(express.json());
 
@@ -10,7 +10,7 @@ router.get("/", async (req, res, next) => {
 		const posts = await Post.find().populate("author"); // 'author' here refers to the KEY name inside the Post model!
 		res.json(posts);
 	} catch (err) {
-		return handleError(res, err, next);
+		next(err);
 	}
 });
 
@@ -25,7 +25,7 @@ router.post("/", async (req, res, next) => {
 		await newPost.save();
 		res.status(201).json({ message: `Successfully created a new post.` });
 	} catch (err) {
-		return handleError(res, err, next);
+		next(err);
 	}
 });
 
@@ -35,7 +35,7 @@ router.get("/:id", async (req, res, next) => {
 		if (!post) return fireNotFoundError(res, next);
 		res.json(post);
 	} catch (err) {
-		handleError(res, err, next);
+		next(err);
 	}
 });
 
@@ -47,7 +47,7 @@ router.put("/:id", async (req, res, next) => {
 		if (!post) return fireNotFoundError(res, next);
 		res.json(post);
 	} catch (err) {
-		handleError(res, err, next);
+		next(err);
 	}
 });
 
@@ -59,34 +59,18 @@ router.delete("/:id", async (req, res, next) => {
 			message: `Successfully deleted post with ID ${req.params.id}.`
 		});
 	} catch (err) {
-		handleError(res, err, next);
+		next(err);
 	}
 });
 
 const fireNotFoundError = (res, next) => {
-	return handleError(
-		res,
-		{ name: "NotFoundError", message: "Cannot find post with this id!" },
-		next
-	);
-};
-
-const handleError = (res, err, next) => {
-	if (err.name === "ValidationError") {
-		// will enter here for CastError and ValidatorError (custom, required and unique validators)
-		// for operations involving writing to db
-		res.status(400).json(err.message);
-		return;
-	}
-
-	if (err.name === "NotFoundError") {
-		res.status(404).json(err.message);
-		return;
-	}
-
+	let err = {
+		name: "NotFoundError",
+		message: "Cannot find post with this id!"
+	};
 	next(err);
 };
 
 module.exports = app => {
-	app.use("/posts", router);
+	app.use("/posts", router, errorHandler);
 };
