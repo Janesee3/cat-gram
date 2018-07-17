@@ -10,10 +10,9 @@ router.get("/", async (req, res, next) => {
 	try {
 		let users = await User.find();
 
-		let promises = users.map(async user => { // will return an array of promises
-			let posts = await Post.find({ author: user._id });
-			let combinedUserObj = { ...user.toJSON(), posts: posts };
-			return combinedUserObj;
+		let promises = users.map(async user => {
+			// will return an array of promises
+			return await getJointUserAndPosts(user);
 		});
 
 		let results = await Promise.all(promises);
@@ -26,19 +25,28 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
 	try {
-        let user = await User.findById(req.params.id);
-        
-        if (!user) return fireNotFoundError(res, next);
-
-        let posts = await Post.find({author: req.params.id})
-		res.json({
-            ...user.toJSON(),
-            posts: posts
-        });
+		let user = await User.findById(req.params.id);
+		if (!user) return fireNotFoundError(res, next);
+		res.json(await getJointUserAndPosts(user));
 	} catch (err) {
 		handleError(res, err, next);
 	}
 });
+
+router.put("/:id", async (req, res, next) => {
+	try {
+		let user = await User.findByIdAndUpdate(req.params.id, req.body);
+		if (!user) return fireNotFoundError(res, next);
+		res.json(await getJointUserAndPosts(user));
+	} catch (err) {
+		handleError(res, err, next);
+	}
+});
+
+const getJointUserAndPosts = async user => {
+	let posts = await Post.find({ author: user._id });
+	return { ...user.toJSON(), posts: posts };
+};
 
 const fireNotFoundError = (res, next) => {
 	return handleError(

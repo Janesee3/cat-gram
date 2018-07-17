@@ -77,7 +77,7 @@ describe("GET /users", () => {
 // 	// TODO: Test case for non-unique username
 // });
 
-describe.only("GET /users/id", () => {
+describe("GET /users/id", () => {
 	it("should return status 200 when given a valid user ID, and user object should contain list of posts authored.", async () => {
 		let testId = mockUsers.user1._id.toString();
 		let response = await request(app).get(`/users/${testId}`);
@@ -104,12 +104,12 @@ describe.only("GET /users/id", () => {
 describe("PUT /users/id", () => {
 	it("should return status 200 and correctly update the post object when given a valid user ID", async () => {
 		let UPDATED_BIO = "My New Bio!";
-		let testId = mockUsers.post1._id.toString();
+		let testId = mockUsers.user1._id.toString();
 
 		let response = await request(app)
 			.put(`/users/${testId}`)
 			.send({
-				caption: UPDATED_BIO
+				bio: UPDATED_BIO
 			});
 
 		expect(response.status).toBe(200);
@@ -132,7 +132,7 @@ describe("PUT /users/id", () => {
 	});
 });
 
-describe("DELETE /users/id", () => {
+describe.skip("DELETE /users/id", () => {
 	it("should return status 200 and remove the post object when given a valid user ID", async () => {
 		let testId = mockUsers.user1._id.toString();
 
