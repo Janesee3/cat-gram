@@ -47,9 +47,6 @@ app.use(function(req, res, next) {
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Custom Routers
-app.get("/", (req, res, next) => {
-	res.json("hello");
-});
 userRouter(app);
 postRouter(app);
 
