@@ -20,6 +20,28 @@ const userSchema = mongoose.Schema({
 
 userSchema.plugin(uniqueValidator, { message: "should be unique" });
 
-const user = mongoose.model("User", userSchema);
+// use ES5 function to prevent `this` from becoming undefined
+userSchema.methods.setHashedPassword = function(password) {
+	this.salt = generateSalt();
+	this.hash = hashPassword(password, this.salt);
+};
 
-module.exports = user;
+// use ES5 function to prevent `this` from becoming undefined
+userSchema.methods.validatePassword = function(password) {
+	return this.hash === hashPassword(password, this.salt);
+};
+
+const generateSalt = () => {
+	return crypto.randomBytes(16).toString("hex");
+};
+
+const hashPassword = (password, salt) => {
+	const hash = crypto
+		.pbkdf2Sync(password, salt, 10000, 512, "sha512")
+		.toString("hex");
+	return hash;
+};
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
