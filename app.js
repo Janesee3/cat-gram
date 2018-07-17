@@ -5,6 +5,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
 const indexRouter = require("./routes/index-router");
+const accountRouter = require("./routes/account-router");
 const postRouter = require("./routes/post-router");
 const userRouter = require("./routes/user-router");
 
@@ -50,15 +51,16 @@ app.use(function(req, res, next) {
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Custom Routers
-app.use(
-	"/secrets",
-	passport.authenticate("jwt", { session: false }),
-	(req, res) => {
-		res.json({ message: "secret" });
-	}
-);
+// app.use(
+// 	"/secrets",
+// 	passport.authenticate("jwt", { session: false }),
+// 	(req, res) => {
+// 		res.json({ message: "secret" });
+// 	}
+// );
 
 indexRouter(app);
+accountRouter(app);
 userRouter(app);
 postRouter(app);
 
