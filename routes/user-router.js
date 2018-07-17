@@ -60,14 +60,14 @@ router.post("/signup", async (req, res, next) => {
 	const { username, password } = req.body;
 
 	if (!password) {
-        let error = { name: "ValidationError", message: "password is required!" };
-        next(error);
-        return;
-    }
-       
+		let error = { name: "ValidationError", message: "password is required!" };
+		next(error);
+		return;
+	}
+
 	const user = new User({ username });
-    user.setHashedPassword(password);
-    
+	user.setHashedPassword(password);
+
 	try {
 		await user.save();
 		res.json({ user });
@@ -85,7 +85,7 @@ const getJointUserAndPosts = async user => {
 const fireNotFoundError = (res, next) => {
 	let error = {
 		name: "NotFoundError",
-		message: "Cannot find post with this id!"
+		message: "Cannot find user with this id!"
 	};
 	next(error);
 };
