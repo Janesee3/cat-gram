@@ -176,12 +176,12 @@ describe("DELETE /posts/id", () => {
 
 const _addMockUsers = async () => {
 	const user1 = new User({
-		username: "Mock User 1",
+		username: "MockUser1",
 		bio: "Hello Im mock user 1"
 	});
 
 	const user2 = new User({
-		username: "Mock User 2",
+		username: "MockUser2",
 		bio: "Hello Im mock user 2"
 	});
 
