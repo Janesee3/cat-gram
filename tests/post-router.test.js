@@ -2,7 +2,7 @@ const express = require("express");
 const request = require("supertest");
 const postRouter = require("../routes/post-router");
 const Post = require("../models/Post");
-const addFakeData = require("../utility/test-utility");
+const { addFakeData } = require("../utility/test-utility");
 
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const mongod = new MongoMemoryServer();
@@ -13,6 +13,13 @@ postRouter(app);
 
 const mockUsers = {};
 const mockPosts = {};
+
+// What i need //
+// create a mock user (need to use sign up route)
+// login with this user credentials (need to use login route)
+// retrieve the jwt token and store it in the test file
+// make use of the token to test all the authorised routes here
+// then test for the deauthorised path also
 
 /**** SETUP ***/
 

@@ -2,7 +2,7 @@ const express = require("express");
 const request = require("supertest");
 const userRouter = require("../routes/user-router");
 const User = require("../models/User");
-const addFakeData = require("../utility/test-utility");
+const { addFakeData } = require("../utility/test-utility");
 
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const mongod = new MongoMemoryServer();
@@ -13,6 +13,10 @@ userRouter(app);
 
 const mockUsers = {};
 const mockPosts = {};
+const credentials = {
+	username: "jane",
+	password: "1234"
+};
 
 /**** SETUP ***/
 
@@ -35,6 +39,8 @@ beforeEach(async () => {
 
 /** TEST CASES **/
 
+// UNPROTECTED
+
 describe("GET /users", () => {
 	it("should return list of existing users, where each user object also has a field that shows the list of posts authored", async () => {
 		let response = await request(app).get("/users");
@@ -46,63 +52,6 @@ describe("GET /users", () => {
 		let postsByUser = response.body[0].posts;
 		expect(Array.isArray(postsByUser)).toBe(true);
 		expect(postsByUser.length).toBe(1);
-	});
-});
-
-describe("POST /users/signup", () => {
-	it("should return status 201 when given a valid request body, and increment list of users by 1", async () => {
-		let response = await request(app)
-			.post("/users/signup")
-			.send({
-				username: "testuser",
-				password: "12345"
-			});
-
-		expect(response.status).toBe(200);
-		const users = await User.find();
-		expect(users.length).toBe(3); // increased by 1
-	});
-
-	it("should return status 400 when given an invalid request body that does not have password", async () => {
-		let response = await request(app)
-			.post("/users/signup")
-			.send({
-				username: "testuser"
-			});
-
-		expect(response.status).toBe(400);
-	});
-
-	it("should return status 400 when given an invalid request body that does not have username", async () => {
-		let response = await request(app)
-			.post("/users/signup")
-			.send({
-				password: "password"
-			});
-
-		expect(response.status).toBe(400);
-	});
-
-	it("should return status 400 when given an invalid username format", async () => {
-		let response = await request(app)
-			.post("/users/signup")
-			.send({
-				username: "hi hi",
-				password: "password"
-			});
-
-		expect(response.status).toBe(400);
-	});
-
-	it("should return status 400 when given non-unique username", async () => {
-		let response = await request(app)
-			.post("/users/signup")
-			.send({
-				username: mockUsers.user1.username,
-				password: "password"
-			});
-
-		expect(response.status).toBe(400);
 	});
 });
 
@@ -129,6 +78,8 @@ describe("GET /users/id", () => {
 		expect(response.status).toBe(500);
 	});
 });
+
+// PROTECTED
 
 describe("PUT /users/id", () => {
 	it("should return status 200 and correctly update the post object when given a valid user ID", async () => {
