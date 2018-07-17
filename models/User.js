@@ -7,6 +7,7 @@ const userSchema = mongoose.Schema({
 	username: {
 		type: String,
 		required: [true, "username is required!"],
+		match: [/^[a-zA-Z0-9]+$/, "username format is invalid"],
 		lowercase: true,
 		unique: true,
 		index: true
@@ -18,7 +19,7 @@ const userSchema = mongoose.Schema({
 	salt: String
 });
 
-userSchema.plugin(uniqueValidator, { message: "should be unique" });
+userSchema.plugin(uniqueValidator, { message: "username should be unique" });
 
 // use ES5 function to prevent `this` from becoming undefined
 userSchema.methods.setHashedPassword = function(password) {
