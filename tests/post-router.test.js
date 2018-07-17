@@ -35,10 +35,11 @@ beforeEach(async () => {
 
 /****  TEST CASES *****/
 
-it("GET /posts should return message", async () => {
+it("GET /posts should return list of existing posts", async () => {
 	let response = await request(app).get("/posts");
 
 	expect(response.status).toBe(200);
+	expect(Array.isArray(response.body)).toBe(true);
 	expect(response.body.length).toBe(2);
 });
 
@@ -198,7 +199,7 @@ const _addMockPosts = async () => {
 
 	const post2 = new Post({
 		author: mockUsers.user2._id,
-		caption: "Cheesy caption for post1",
+		caption: "my caption for post 2",
 		image: "https://sampleurl.com"
 	});
 
