@@ -50,6 +50,14 @@ app.use(function(req, res, next) {
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Custom Routers
+app.use(
+	"/secrets",
+	passport.authenticate("jwt", { session: false }),
+	(req, res) => {
+		res.json({ message: "secret" });
+	}
+);
+
 indexRouter(app);
 userRouter(app);
 postRouter(app);
