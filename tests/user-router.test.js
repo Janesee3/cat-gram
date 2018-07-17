@@ -35,7 +35,7 @@ beforeEach(async () => {
 
 /** TEST CASES **/
 
-describe.only("GET /users", () => {
+describe("GET /users", () => {
 	it("should return list of existing users, where each user object also has a field that shows the list of posts authored", async () => {
 		let response = await request(app).get("/users");
 
@@ -49,35 +49,36 @@ describe.only("GET /users", () => {
 	});
 });
 
-describe("POST /users", () => {
-	it("should return status 201 when given a valid request body, and increment list of users by 1", async () => {
-		let response = await request(app)
-			.post("/users")
-			.send({
-				username: "test user",
-				bio: "hello im a test user"
-			});
+// SHOULD BE SIGN UP (?)
+// describe.only("POST /users", () => {
+// 	it("should return status 201 when given a valid request body, and increment list of users by 1", async () => {
+// 		let response = await request(app)
+// 			.post("/users")
+// 			.send({
+// 				username: "test user",
+// 				bio: "hello im a test user"
+// 			});
 
-		expect(response.status).toBe(201);
-		const users = await User.find();
-		expect(users.length).toBe(3); // increased by 1
-	});
+// 		expect(response.status).toBe(201);
+// 		const users = await User.find();
+// 		expect(users.length).toBe(3); // increased by 1
+// 	});
 
-	it("should return status 400 when given an invalid request body that lacks any of the required fields", async () => {
-		let response = await request(app)
-			.post("/users")
-			.send({
-				bio: "hello im a test user"
-			});
+// 	it("should return status 400 when given an invalid request body that lacks any of the required fields", async () => {
+// 		let response = await request(app)
+// 			.post("/users")
+// 			.send({
+// 				bio: "hello im a test user"
+// 			});
 
-		expect(response.status).toBe(400);
-	});
+// 		expect(response.status).toBe(400);
+// 	});
 
-	// TODO: Test case for non-unique username
-});
+// 	// TODO: Test case for non-unique username
+// });
 
-describe("GET /users/id", () => {
-	it("should return status 200 when given a valid posusert ID", async () => {
+describe.only("GET /users/id", () => {
+	it("should return status 200 when given a valid user ID", async () => {
 		let testId = mockUsers.user1._id.toString();
 		let response = await request(app).get(`/users/${testId}`);
 

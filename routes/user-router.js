@@ -24,6 +24,22 @@ router.get("/", async (req, res, next) => {
 	}
 });
 
+router.get("/:id", async (req, res, next) => {
+	try {
+        let user = await User.findById(req.params.id);
+        
+        if (!user) return fireNotFoundError(res, next);
+
+        let posts = await Post.find({author: req.params.id})
+		res.json({
+            ...user.toJSON(),
+            posts: posts
+        });
+	} catch (err) {
+		handleError(res, err, next);
+	}
+});
+
 const fireNotFoundError = (res, next) => {
 	return handleError(
 		res,
