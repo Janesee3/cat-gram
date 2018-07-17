@@ -57,6 +57,25 @@ router.delete("/:id", async (req, res, next) => {
 	}
 });
 
+router.post("/signup", async (req, res, next) => {
+	const { username, password } = req.body;
+
+	if (!password)
+		return handleError(
+			res,
+			{ name: "ValidationError", message: "password is required!" },
+			next
+		);
+	const user = new User({ username });
+	user.setHashedPassword(password);
+	try {
+		await user.save();
+		res.json({ user });
+	} catch (err) {
+		return handleError(res, err, next);
+	}
+});
+
 const getJointUserAndPosts = async user => {
 	let posts = await Post.find({ author: user._id });
 	let newUser = { ...user.toJSON(), posts: posts };

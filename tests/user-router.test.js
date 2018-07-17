@@ -49,33 +49,62 @@ describe("GET /users", () => {
 	});
 });
 
-// SHOULD BE SIGN UP (?)
-// describe.only("POST /users", () => {
-// 	it("should return status 201 when given a valid request body, and increment list of users by 1", async () => {
-// 		let response = await request(app)
-// 			.post("/users")
-// 			.send({
-// 				username: "test user",
-// 				bio: "hello im a test user"
-// 			});
+describe("POST /users/signup", () => {
+	it("should return status 201 when given a valid request body, and increment list of users by 1", async () => {
+		let response = await request(app)
+			.post("/users/signup")
+			.send({
+				username: "testuser",
+				password: "12345"
+			});
 
-// 		expect(response.status).toBe(201);
-// 		const users = await User.find();
-// 		expect(users.length).toBe(3); // increased by 1
-// 	});
+		expect(response.status).toBe(200);
+		const users = await User.find();
+		expect(users.length).toBe(3); // increased by 1
+	});
 
-// 	it("should return status 400 when given an invalid request body that lacks any of the required fields", async () => {
-// 		let response = await request(app)
-// 			.post("/users")
-// 			.send({
-// 				bio: "hello im a test user"
-// 			});
+	it("should return status 400 when given an invalid request body that does not have password", async () => {
+		let response = await request(app)
+			.post("/users/signup")
+			.send({
+				username: "testuser"
+			});
 
-// 		expect(response.status).toBe(400);
-// 	});
+		expect(response.status).toBe(400);
+	});
 
-// 	// TODO: Test case for non-unique username
-// });
+	it("should return status 400 when given an invalid request body that does not have username", async () => {
+		let response = await request(app)
+			.post("/users/signup")
+			.send({
+				password: "password"
+			});
+
+		expect(response.status).toBe(400);
+	});
+
+	it("should return status 400 when given an invalid username format", async () => {
+		let response = await request(app)
+			.post("/users/signup")
+			.send({
+				username: "hi hi",
+				password: "password"
+			});
+
+		expect(response.status).toBe(400);
+	});
+
+	it("should return status 400 when given non-unique username", async () => {
+		let response = await request(app)
+			.post("/users/signup")
+			.send({
+				username: mockUsers.user1.username,
+				password: "password"
+			});
+
+		expect(response.status).toBe(400);
+	});
+});
 
 describe("GET /users/id", () => {
 	it("should return status 200 when given a valid user ID, and user object should contain list of posts authored.", async () => {
@@ -160,12 +189,12 @@ describe("DELETE /users/id", () => {
 
 const _addMockUsers = async () => {
 	const user1 = new User({
-		username: "Mock User 1",
+		username: "MockUser1",
 		bio: "Hello Im mock user 1"
 	});
 
 	const user2 = new User({
-		username: "Mock User 2",
+		username: "MockUser2",
 		bio: "Hello Im mock user 2"
 	});
 
