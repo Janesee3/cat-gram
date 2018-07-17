@@ -131,7 +131,7 @@ describe("PUT /users/id", () => {
 	});
 });
 
-describe.skip("DELETE /users/id", () => {
+describe("DELETE /users/id", () => {
 	it("should return status 200 and remove the post object when given a valid user ID", async () => {
 		let testId = mockUsers.user1._id.toString();
 

@@ -35,9 +35,23 @@ router.get("/:id", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
 	try {
-		let user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true});
+		let user = await User.findByIdAndUpdate(req.params.id, req.body, {
+			new: true
+		});
 		if (!user) return fireNotFoundError(res, next);
 		res.json(await getJointUserAndPosts(user));
+	} catch (err) {
+		handleError(res, err, next);
+	}
+});
+
+router.delete("/:id", async (req, res, next) => {
+	try {
+		let user = await User.findByIdAndDelete(req.params.id);
+		if (!user) return fireNotFoundError(res, next);
+		res.json({
+			message: `Successfully deleted user with ID ${req.params.id}.`
+		});
 	} catch (err) {
 		handleError(res, err, next);
 	}
