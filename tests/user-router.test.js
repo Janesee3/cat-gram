@@ -78,11 +78,12 @@ describe("GET /users", () => {
 // });
 
 describe.only("GET /users/id", () => {
-	it("should return status 200 when given a valid user ID", async () => {
+	it("should return status 200 when given a valid user ID, and user object should contain list of posts authored.", async () => {
 		let testId = mockUsers.user1._id.toString();
 		let response = await request(app).get(`/users/${testId}`);
 
 		expect(response.body._id).toBe(testId);
+		expect(Array.isArray(response.body.posts)).toBe(true);
 	});
 
 	it("should return status 404 when given a user ID that doesnt exist", async () => {
