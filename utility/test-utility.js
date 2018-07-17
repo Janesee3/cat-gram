@@ -33,7 +33,11 @@ const _addMockPosts = async (mockUsers, mockPosts) => {
 	mockPosts.post2 = await post2.save();
 };
 
-module.exports = addFakeData = async (mockUsers, mockPosts) => {
+addFakeData = async (mockUsers, mockPosts) => {
 	await _addMockUsers(mockUsers);
 	await _addMockPosts(mockUsers, mockPosts);
+};
+
+module.exports = {
+	addFakeData
 };
