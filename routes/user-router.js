@@ -32,26 +32,6 @@ unprotectedRoutes.get("/:id", async (req, res, next) => {
 	}
 });
 
-unprotectedRoutes.post("/signup", async (req, res, next) => {
-	const { username, password } = req.body;
-
-	if (!password) {
-		let error = { name: "ValidationError", message: "password is required!" };
-		next(error);
-		return;
-	}
-
-	const user = new User({ username });
-	user.setHashedPassword(password);
-
-	try {
-		await user.save();
-		res.json({ user });
-	} catch (err) {
-		next(err);
-	}
-});
-
 const protectedRoutes = express.Router();
 
 protectedRoutes.put("/:id", async (req, res, next) => {
