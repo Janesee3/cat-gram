@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const { passport } = require("./config/passport");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
 
@@ -37,6 +38,7 @@ db.on("error", error => {
 const app = express();
 
 app.use(express.json());
+app.use(passport.initialize());
 app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header(
