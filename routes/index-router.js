@@ -10,13 +10,14 @@ router.get("/", (req, res) => {
 	res.json("CatGram API is up!");
 });
 
-router.post("/signin", async (req, res) => {
+router.post("/login", async (req, res) => {
 	const { username, password } = req.body;
 
 	const user = await User.findOne({ username });
 
 	if (!user) {
 		res.status(401).json({ message: "No such user found." });
+		return;
 	}
 
 	if (user.validatePassword(password)) {
