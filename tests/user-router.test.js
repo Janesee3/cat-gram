@@ -35,10 +35,18 @@ beforeEach(async () => {
 
 /** TEST CASES **/
 
-it("should pass", async () => {
-	let res = await request(app).get("/users");
+describe.only("GET /users", () => {
+	it("should return list of existing users, where each user object also has a field that shows the list of posts authored", async () => {
+		let response = await request(app).get("/users");
 
-	expect(res.body).toBe("hello");
+		expect(response.status).toBe(200);
+		expect(Array.isArray(response.body)).toBe(true);
+		expect(response.body.length).toBe(2);
+
+		let postsByUser = response.body[0].posts;
+		expect(Array.isArray(postsByUser)).toBe(true);
+		expect(postsByUser.length).toBe(1);
+	});
 });
 
 describe("POST /users", () => {
@@ -46,8 +54,8 @@ describe("POST /users", () => {
 		let response = await request(app)
 			.post("/users")
 			.send({
-                username: "test user",
-                bio: "hello im a test user"
+				username: "test user",
+				bio: "hello im a test user"
 			});
 
 		expect(response.status).toBe(201);
@@ -59,13 +67,13 @@ describe("POST /users", () => {
 		let response = await request(app)
 			.post("/users")
 			.send({
-                bio: "hello im a test user"
+				bio: "hello im a test user"
 			});
 
 		expect(response.status).toBe(400);
 	});
 
-    // TODO: Test case for non-unique username
+	// TODO: Test case for non-unique username
 });
 
 describe("GET /users/id", () => {
@@ -173,7 +181,7 @@ const _addMockPosts = async () => {
 
 	const post2 = new Post({
 		author: mockUsers.user2._id,
-		caption: "Cheesy caption for post1",
+		caption: "my caption for post 2",
 		image: "https://sampleurl.com"
 	});
 
