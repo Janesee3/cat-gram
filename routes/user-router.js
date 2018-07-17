@@ -1,12 +1,12 @@
 const express = require("express");
-const router = express.Router();
+const { passport } = require("../config/passport");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/mongoose-error-handler");
 
-router.use(express.json());
+const unprotectedRoutes = express.Router();
 
-router.get("/", async (req, res, next) => {
+unprotectedRoutes.get("/", async (req, res, next) => {
 	try {
 		let users = await User.find();
 
@@ -22,7 +22,7 @@ router.get("/", async (req, res, next) => {
 	}
 });
 
-router.get("/:id", async (req, res, next) => {
+unprotectedRoutes.get("/:id", async (req, res, next) => {
 	try {
 		let user = await User.findById(req.params.id);
 		if (!user) return fireNotFoundError(res, next);
@@ -32,31 +32,7 @@ router.get("/:id", async (req, res, next) => {
 	}
 });
 
-router.put("/:id", async (req, res, next) => {
-	try {
-		let user = await User.findByIdAndUpdate(req.params.id, req.body, {
-			new: true
-		});
-		if (!user) return fireNotFoundError(res, next);
-		res.json(await getJointUserAndPosts(user));
-	} catch (err) {
-		next(err);
-	}
-});
-
-router.delete("/:id", async (req, res, next) => {
-	try {
-		let user = await User.findByIdAndDelete(req.params.id);
-		if (!user) return fireNotFoundError(res, next);
-		res.json({
-			message: `Successfully deleted user with ID ${req.params.id}.`
-		});
-	} catch (err) {
-		next(err);
-	}
-});
-
-router.post("/signup", async (req, res, next) => {
+unprotectedRoutes.post("/signup", async (req, res, next) => {
 	const { username, password } = req.body;
 
 	if (!password) {
@@ -76,6 +52,33 @@ router.post("/signup", async (req, res, next) => {
 	}
 });
 
+const protectedRoutes = express.Router();
+
+protectedRoutes.put("/:id", async (req, res, next) => {
+	try {
+		let user = await User.findByIdAndUpdate(req.params.id, req.body, {
+			new: true
+		});
+		if (!user) return fireNotFoundError(res, next);
+		res.json(await getJointUserAndPosts(user));
+	} catch (err) {
+		next(err);
+	}
+});
+
+protectedRoutes.delete("/:id", async (req, res, next) => {
+	try {
+		let user = await User.findByIdAndDelete(req.params.id);
+		if (!user) return fireNotFoundError(res, next);
+		res.json({
+			message: `Successfully deleted user with ID ${req.params.id}.`
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+
 const getJointUserAndPosts = async user => {
 	let posts = await Post.find({ author: user._id });
 	let newUser = { ...user.toJSON(), posts: posts };
@@ -91,5 +94,12 @@ const fireNotFoundError = (res, next) => {
 };
 
 module.exports = app => {
-	app.use("/users", router, errorHandler);
+	app.use(express.json());
+	app.use("/users", unprotectedRoutes, errorHandler);
+	app.use(
+		"/users",
+		passport.authenticate("jwt", { session: false }),
+		protectedRoutes,
+		errorHandler
+	);
 };
