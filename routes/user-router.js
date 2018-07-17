@@ -35,7 +35,7 @@ router.get("/:id", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
 	try {
-		let user = await User.findByIdAndUpdate(req.params.id, req.body);
+		let user = await User.findByIdAndUpdate(req.params.id, req.body, {new: true});
 		if (!user) return fireNotFoundError(res, next);
 		res.json(await getJointUserAndPosts(user));
 	} catch (err) {
@@ -45,7 +45,8 @@ router.put("/:id", async (req, res, next) => {
 
 const getJointUserAndPosts = async user => {
 	let posts = await Post.find({ author: user._id });
-	return { ...user.toJSON(), posts: posts };
+	let newUser = { ...user.toJSON(), posts: posts };
+	return newUser;
 };
 
 const fireNotFoundError = (res, next) => {

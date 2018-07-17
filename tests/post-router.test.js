@@ -129,8 +129,7 @@ describe("PUT /posts/id", () => {
 			});
 
 		expect(response.status).toBe(200);
-		let newPost = await Post.findById(testId);
-		expect(newPost.caption).toBe(UPDATED_CAPTION);
+		expect(response.body.caption).toBe(UPDATED_CAPTION);
 	});
 
 	it("should return status 404 when given a post ID that doesnt exist", async () => {

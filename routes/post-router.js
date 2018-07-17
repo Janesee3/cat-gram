@@ -41,7 +41,9 @@ router.get("/:id", async (req, res, next) => {
 
 router.put("/:id", async (req, res, next) => {
 	try {
-		let post = await Post.findByIdAndUpdate(req.params.id, req.body);
+		let post = await Post.findByIdAndUpdate(req.params.id, req.body, {
+			new: true
+		});
 		if (!post) return fireNotFoundError(res, next);
 		res.json(post);
 	} catch (err) {

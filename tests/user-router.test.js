@@ -113,8 +113,7 @@ describe("PUT /users/id", () => {
 			});
 
 		expect(response.status).toBe(200);
-		let newUser = await User.findById(testId);
-		expect(newUser.bio).toBe(UPDATED_BIO);
+		expect(response.body.bio).toBe(UPDATED_BIO);
 	});
 
 	it("should return status 404 when given a user ID that doesnt exist", async () => {
