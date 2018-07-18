@@ -38,6 +38,32 @@ addFakeData = async (mockUsers, mockPosts) => {
 	await _addMockPosts(mockUsers, mockPosts);
 };
 
+const express = require("express");
+const request = require("supertest");
+const accountRouter = require("../routes/account-router");
+const app = express();
+accountRouter(app);
+
+const createMockUser = async credentials => {
+	let response = await request(app)
+		.post("/account/signup")
+		.send(credentials);
+
+	expect(response.statusCode).toBe(200);
+	return response.body;
+};
+
+const loginAsMockUser = async credentials => {
+	let response = await request(app)
+		.post("/account/login")
+		.send(credentials);
+
+	expect(response.statusCode).toBe(200);
+	return response.body;
+};
+
 module.exports = {
-	addFakeData
+	addFakeData,
+	createMockUser,
+	loginAsMockUser
 };
