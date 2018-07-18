@@ -1,11 +1,12 @@
 const express = require("express");
-const router = express.Router();
+const { passport } = require("../config/passport");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/mongoose-error-handler");
+const isUserAuthorisedForPostAction = require("../middlewares/post-action-authorisation-checker");
 
-router.use(express.json());
+const unprotectedRoutes = express.Router();
 
-router.get("/", async (req, res, next) => {
+unprotectedRoutes.get("/", async (req, res, next) => {
 	try {
 		const posts = await Post.find().populate("author"); // 'author' here refers to the KEY name inside the Post model!
 		res.json(posts);
@@ -14,47 +15,53 @@ router.get("/", async (req, res, next) => {
 	}
 });
 
-router.post("/", async (req, res, next) => {
-	const newPost = new Post({
-		author: req.body.author,
-		caption: req.body.caption,
-		image: req.body.image
-	});
-
-	try {
-		await newPost.save();
-		res.status(201).json({ message: `Successfully created a new post.` });
-	} catch (err) {
-		next(err);
-	}
-});
-
-router.get("/:id", async (req, res, next) => {
+unprotectedRoutes.get("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findById(req.params.id).populate("author");
-		if (!post) return fireNotFoundError(res, next);
+		if (!post) return _fireNotFoundError(res, next);
 		res.json(post);
 	} catch (err) {
 		next(err);
 	}
 });
 
-router.put("/:id", async (req, res, next) => {
+const protectedRoutes = express.Router();
+
+protectedRoutes.post(
+	"/",
+	passport.authenticate("jwt", { session: false }),
+	async (req, res, next) => {
+		const newPost = new Post({
+			author: req.user._id, // id of the currently authenticated user
+			caption: req.body.caption,
+			image: req.body.image
+		});
+
+		try {
+			await newPost.save();
+			res.status(201).json({ message: `Successfully created a new post.` });
+		} catch (err) {
+			next(err);
+		}
+	}
+);
+
+protectedRoutes.put("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findByIdAndUpdate(req.params.id, req.body, {
 			new: true
 		});
-		if (!post) return fireNotFoundError(res, next);
+		if (!post) return _fireNotFoundError(res, next);
 		res.json(post);
 	} catch (err) {
 		next(err);
 	}
 });
 
-router.delete("/:id", async (req, res, next) => {
+protectedRoutes.delete("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findByIdAndDelete(req.params.id);
-		if (!post) return fireNotFoundError(res, next);
+		if (!post) return _fireNotFoundError(res, next);
 		res.json({
 			message: `Successfully deleted post with ID ${req.params.id}.`
 		});
@@ -63,7 +70,7 @@ router.delete("/:id", async (req, res, next) => {
 	}
 });
 
-const fireNotFoundError = (res, next) => {
+const _fireNotFoundError = (res, next) => {
 	let err = {
 		name: "NotFoundError",
 		message: "Cannot find post with this id!"
@@ -72,5 +79,12 @@ const fireNotFoundError = (res, next) => {
 };
 
 module.exports = app => {
-	app.use("/posts", router, errorHandler);
+	app.use(express.json());
+	app.use("/posts", unprotectedRoutes, errorHandler);
+	app.use(
+		"/posts",
+		// passport.authenticate("jwt", { session: false }),
+		protectedRoutes,
+		errorHandler
+	);
 };
