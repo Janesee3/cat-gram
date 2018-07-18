@@ -25,6 +25,8 @@ unprotectedRoutes.get("/:id", async (req, res, next) => {
 	}
 });
 
+
+
 const protectedRoutes = express.Router();
 
 protectedRoutes.post("/", async (req, res, next) => {
