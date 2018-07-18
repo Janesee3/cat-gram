@@ -3,7 +3,7 @@ const { passport } = require("../config/passport");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/mongoose-error-handler");
-const isUserAuthorisedForAction = require("../middlewares/action-authorisation-checker");
+const isUserAuthorisedForAction = require("../middlewares/user-action-authorisation-checker");
 
 const unprotectedRoutes = express.Router();
 
