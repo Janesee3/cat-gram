@@ -115,13 +115,13 @@ describe("PUT /users/id", () => {
 		expect(response.status).toBe(403);
 	});
 
-	it("should return status 500 when given a post ID that is invalid with valid auth token", async () => {
-		let testId = "invalid id";
+	it("should return status 403 when given a post ID that is invalid with valid auth token", async () => {
+		let testId = "invalid";
 		let response = await request(app)
-			.get(`/users/${testId}`)
+			.put(`/users/${testId}`)
 			.set("Authorization", "Bearer " + token);
 
-		expect(response.status).toBe(500);
+		expect(response.status).toBe(403);
 	});
 
 	it("should return status 403 when given a valid user ID but uses an auth token retrieved from another user login", async () => {
@@ -139,27 +139,41 @@ describe("PUT /users/id", () => {
 	});
 });
 
-describe.skip("DELETE /users/id", () => {
-	it("should return status 200 and remove the post object when given a valid user ID", async () => {
-		let testId = mockUsers.user1._id.toString();
-
-		let response = await request(app).delete(`/users/${testId}`);
+describe("DELETE /users/id", () => {
+	it("should return status 200 and remove the post object when given a valid user ID and its respective auth token", async () => {
+		let testId = authenticatedUser._id.toString();
+		let response = await request(app)
+			.delete(`/users/${testId}`)
+			.set("Authorization", "Bearer " + token);
 
 		expect(response.status).toBe(200);
 		expect(await User.findById(testId)).toBe(null);
 	});
 
-	it("should return status 404 when given a puserost ID that doesnt exist", async () => {
+	it("should return status 403 when given a user ID that doesnt exist", async () => {
 		let testId = "5b4c383b6eb02e0a56534c6d";
-		let response = await request(app).delete(`/users/${testId}`);
+		let response = await request(app)
+			.delete(`/users/${testId}`)
+			.set("Authorization", "Bearer " + token);
 
-		expect(response.status).toBe(404);
+		expect(response.status).toBe(403);
 	});
 
-	it("should return status 500 when given a user ID that is invalid", async () => {
-		let testId = "invalid id";
-		let response = await request(app).delete(`/users/${testId}`);
+	it("should return status 403 when given a user ID that is invalid", async () => {
+		let testId = "invalidid";
+		let response = await request(app)
+			.delete(`/users/${testId}`)
+			.set("Authorization", "Bearer " + token);
 
-		expect(response.status).toBe(500);
+		expect(response.status).toBe(403);
+	});
+
+	it("should return status 403 when given a valid user ID but uses an auth token retrieved from another user login", async () => {
+		let testId = mockUsers.user1._id.toString();
+		let response = await request(app)
+			.delete(`/users/${testId}`)
+			.set("Authorization", "Bearer " + token);
+
+		expect(response.status).toBe(403);
 	});
 });

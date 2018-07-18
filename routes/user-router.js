@@ -3,7 +3,7 @@ const { passport } = require("../config/passport");
 const User = require("../models/User");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/mongoose-error-handler");
-const isUserAuthorisedForAction = require('../middlewares/action-authorisation-checker');
+const isUserAuthorisedForAction = require("../middlewares/action-authorisation-checker");
 
 const unprotectedRoutes = express.Router();
 
@@ -35,30 +35,37 @@ unprotectedRoutes.get("/:id", async (req, res, next) => {
 
 const protectedRoutes = express.Router();
 
-protectedRoutes.put("/:id", isUserAuthorisedForAction, async (req, res, next) => {
-	try {
-		let user = await User.findByIdAndUpdate(req.params.id, req.body, {
-			new: true
-		});
-		if (!user) return _fireNotFoundError(res, next);
-		res.json(await _getJointUserAndPosts(user));
-	} catch (err) {
-		next(err);
+protectedRoutes.put(
+	"/:id",
+	isUserAuthorisedForAction,
+	async (req, res, next) => {
+		try {
+			let user = await User.findByIdAndUpdate(req.params.id, req.body, {
+				new: true
+			});
+			if (!user) return _fireNotFoundError(res, next);
+			res.json(await _getJointUserAndPosts(user));
+		} catch (err) {
+			next(err);
+		}
 	}
-});
+);
 
-protectedRoutes.delete("/:id", isUserAuthorisedForAction, async (req, res, next) => {
-	try {
-		let user = await User.findByIdAndDelete(req.params.id);
-		if (!user) return _fireNotFoundError(res, next);
-		res.json({
-			message: `Successfully deleted user with ID ${req.params.id}.`
-		});
-	} catch (err) {
-		next(err);
+protectedRoutes.delete(
+	"/:id",
+	isUserAuthorisedForAction,
+	async (req, res, next) => {
+		try {
+			let user = await User.findByIdAndDelete(req.params.id);
+			if (!user) return _fireNotFoundError(res, next);
+			res.json({
+				message: `Successfully deleted user with ID ${req.params.id}.`
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
-});
-
+);
 
 const _getJointUserAndPosts = async user => {
 	let posts = await Post.find({ author: user._id });
@@ -73,7 +80,6 @@ const _fireNotFoundError = (res, next) => {
 	};
 	next(error);
 };
-
 
 module.exports = app => {
 	app.use(express.json());
