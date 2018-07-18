@@ -12,7 +12,6 @@ const jwtOptions = {
 
 // Will be called during passport.authenticate
 const verify = async (jwt_payload, done) => {
-	// console.log(jwt_payload);
 	const user = await User.findById(jwt_payload.userId);
 	if (user) {
 		done(null, user);

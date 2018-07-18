@@ -50,7 +50,6 @@ protectedRoutes.put(
 	isUserAuthorisedForPostAction,
 	async (req, res, next) => {
 		try {
-			console.log("I WAS HERE!!");
 			let post = await Post.findByIdAndUpdate(req.params.id, req.body, {
 				new: true
 			});
@@ -62,17 +61,21 @@ protectedRoutes.put(
 	}
 );
 
-protectedRoutes.delete("/:id", async (req, res, next) => {
-	try {
-		let post = await Post.findByIdAndDelete(req.params.id);
-		if (!post) return _fireNotFoundError(res, next);
-		res.json({
-			message: `Successfully deleted post with ID ${req.params.id}.`
-		});
-	} catch (err) {
-		next(err);
+protectedRoutes.delete(
+	"/:id",
+	isUserAuthorisedForPostAction,
+	async (req, res, next) => {
+		try {
+			let post = await Post.findByIdAndDelete(req.params.id);
+			if (!post) return _fireNotFoundError(res, next);
+			res.json({
+				message: `Successfully deleted post with ID ${req.params.id}.`
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
-});
+);
 
 const _fireNotFoundError = (res, next) => {
 	let err = {
