@@ -22,6 +22,7 @@ const credentials = {
 	password: "1234"
 };
 let authenticatedUser = {};
+let authenticatedPost = {};
 let token;
 
 // What i need //
@@ -47,9 +48,22 @@ afterAll(() => {
 
 beforeEach(async () => {
 	mongoose.connection.db.dropDatabase();
+
 	await addFakeData(mockUsers, mockPosts);
+
 	authenticatedUser = (await createMockUser(credentials)).user;
 	token = (await loginAsMockUser(credentials)).token;
+
+	// REFACTOR!!!!!!!!!!!!!
+	let response = await request(app)
+		.post("/posts")
+		.send({
+			caption: "Post by authenticated user",
+			image: "randomurl.com"
+		})
+		.set("Authorization", "Bearer " + token);
+
+	authenticatedPost = response.body.post;
 });
 
 /****  TEST CASES *****/
@@ -89,8 +103,8 @@ describe("GET /posts/id", () => {
 
 // PROTECTED
 
-describe.only("POST /posts", () => {
-	it("should return status 201 when given a valid request body, and increment list of posts by 1", async () => {
+describe("POST /posts", () => {
+	it("should return status 201 and the correct post object when given a valid request body. Should also increment list of posts by 1", async () => {
 		let response = await request(app)
 			.post("/posts")
 			.send({
@@ -100,6 +114,7 @@ describe.only("POST /posts", () => {
 			.set("Authorization", "Bearer " + token);
 
 		expect(response.status).toBe(201);
+		expect(response.body.post.caption).toBe("Hello im a test post");
 		const posts = await Post.find();
 		expect(posts.length).toBe(3); // increased by 1
 	});
@@ -139,10 +154,10 @@ describe.only("POST /posts", () => {
 	});
 });
 
-describe("PUT /posts/id", () => {
+describe.only("PUT /posts/id", () => {
 	it("should return status 200 and correctly update the post object when given a valid post ID and its respective auth token", async () => {
 		let UPDATED_CAPTION = "updated caption";
-		let testId = authenticatedUser._id.toString();
+		let testId = authenticatedPost._id.toString();
 
 		let response = await request(app)
 			.put(`/posts/${testId}`)
@@ -155,21 +170,39 @@ describe("PUT /posts/id", () => {
 		expect(response.body.caption).toBe(UPDATED_CAPTION);
 	});
 
-	it("should return status 403 when given a post ID that doesnt exist with valid auth token", async () => {
+	it("should return status 401 when given a post ID that doesnt exist without an auth token", async () => {
 		let testId = "5b4c383b6eb02e0a56534c6d";
 		let response = await request(app).put(`/posts/${testId}`);
 
+		expect(response.status).toBe(401);
+	});
+
+	it("should return status 403 when given a post ID that doesnt exist with an auth token", async () => {
+		let testId = "5b4c383b6eb02e0a56534c6d";
+		let response = await request(app)
+			.put(`/posts/${testId}`)
+			.set("Authorization", "Bearer " + token);
+
 		expect(response.status).toBe(403);
 	});
 
-	it("should return status 403 when given a post ID that is invalid with auth token", async () => {
+	it("should return status 500 when given a post ID that is invalid without an auth token", async () => {
 		let testId = "invalid id";
 		let response = await request(app).get(`/posts/${testId}`);
 
-		expect(response.status).toBe(403);
+		expect(response.status).toBe(500);
 	});
 
-	it("should return status 403 when given a valid user ID but uses an auth token retrieved from another user login", async () => {
+	it("should return status 500 when given a post ID that is invalid with an auth token", async () => {
+		let testId = "invalid id";
+		let response = await request(app)
+			.get(`/posts/${testId}`)
+			.set("Authorization", "Bearer " + token);
+
+		expect(response.status).toBe(500);
+	});
+
+	it("should return status 403 trying to update a post that is not authored by the logged in user", async () => {
 		let UPDATED_CAPTION = "updated caption";
 		let testId = mockPosts.post1._id.toString();
 
@@ -177,7 +210,8 @@ describe("PUT /posts/id", () => {
 			.put(`/posts/${testId}`)
 			.send({
 				caption: UPDATED_CAPTION
-			});
+			})
+			.set("Authorization", "Bearer " + token);
 
 		expect(response.status).toBe(403);
 	});

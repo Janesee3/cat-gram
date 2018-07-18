@@ -27,36 +27,40 @@ unprotectedRoutes.get("/:id", async (req, res, next) => {
 
 const protectedRoutes = express.Router();
 
-protectedRoutes.post(
-	"/",
-	passport.authenticate("jwt", { session: false }),
-	async (req, res, next) => {
-		const newPost = new Post({
-			author: req.user._id, // id of the currently authenticated user
-			caption: req.body.caption,
-			image: req.body.image
-		});
+protectedRoutes.post("/", async (req, res, next) => {
+	const newPost = new Post({
+		author: req.user._id, // id of the currently authenticated user
+		caption: req.body.caption,
+		image: req.body.image
+	});
 
+	try {
+		let createdPost = await newPost.save();
+		res.status(201).json({
+			message: `Successfully created a new post.`,
+			post: createdPost
+		});
+	} catch (err) {
+		next(err);
+	}
+});
+
+protectedRoutes.put(
+	"/:id",
+	isUserAuthorisedForPostAction,
+	async (req, res, next) => {
 		try {
-			await newPost.save();
-			res.status(201).json({ message: `Successfully created a new post.` });
+			console.log("I WAS HERE!!");
+			let post = await Post.findByIdAndUpdate(req.params.id, req.body, {
+				new: true
+			});
+			if (!post) return _fireNotFoundError(res, next);
+			res.json(post);
 		} catch (err) {
 			next(err);
 		}
 	}
 );
-
-protectedRoutes.put("/:id", async (req, res, next) => {
-	try {
-		let post = await Post.findByIdAndUpdate(req.params.id, req.body, {
-			new: true
-		});
-		if (!post) return _fireNotFoundError(res, next);
-		res.json(post);
-	} catch (err) {
-		next(err);
-	}
-});
 
 protectedRoutes.delete("/:id", async (req, res, next) => {
 	try {
@@ -83,7 +87,7 @@ module.exports = app => {
 	app.use("/posts", unprotectedRoutes, errorHandler);
 	app.use(
 		"/posts",
-		// passport.authenticate("jwt", { session: false }),
+		passport.authenticate("jwt", { session: false }),
 		protectedRoutes,
 		errorHandler
 	);

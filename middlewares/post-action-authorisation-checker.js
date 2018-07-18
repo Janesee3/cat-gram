@@ -10,24 +10,16 @@ const isUserAuthorisedForPostAction = async (req, res, next) => {
 		post = {};
 	}
 
-	console.log("fetched post object!");
-	console.log(post);
-
-	// then we get the author id from this post obj
-	let authorId = post._id;
-
-	// authorId could be undefined
-	if (_isUserAuthorised(req.user._id, authorId || "")) {
-		console.log("AUTHORISED!!");
+	if (_isUserAuthorised(req.user._id, post.author)) {
 		next();
 	} else {
-		console.log("Not auth :((((");
 		_fireForbiddenError(next);
 	}
 };
 
 const _isUserAuthorised = (authId, reqId) => {
-	return authId.toString() === reqId.toString();
+	if (!reqId) return false; // authorId could be undefined
+	return authId.toString() == reqId.toString();
 };
 
 const _fireForbiddenError = next => {
