@@ -40,7 +40,7 @@ afterAll(() => {
 /**** TEST CASES ***/
 
 describe("POST /account/signup", () => {
-	it("should return status 201 when given a valid request body, and increment list of users by 1", async () => {
+	it("should return status 200 when given a valid request body, and increment list of users by 1", async () => {
 		let response = await request(app)
 			.post("/account/signup")
 			.send({
