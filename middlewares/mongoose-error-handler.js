@@ -1,6 +1,5 @@
 // Error Handler for routes involving mongoose operations
 const errorHandler = (err, req, res, next) => {
-	// console.log(err);
 
 	if (err.name === "ValidationError") {
 		// will enter here for CastError and ValidatorError (custom, required and unique validators)
@@ -18,7 +17,6 @@ const errorHandler = (err, req, res, next) => {
 		res.status(403).json(err.message);
 		return;
 	}
-
 	next(err);
 };
 
