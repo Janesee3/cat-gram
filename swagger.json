@@ -10,6 +10,93 @@
     }
   ],
   "paths": {
+    "/account/signup": {
+      "post": {
+        "summary": "Create a user",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "description": "Credentials of user to be created",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "username": "jimmy",
+                  "password": "password123"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User is successfully signed up.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "user": {
+                  		"bookmarked": [],
+                  		"likes": [],
+                  		"_id": "5b4eb484fa58ba9e76c96c66",
+                  		"username": "jimmy",
+                  		"salt": "...",
+                  		"hash": "...",
+                  		"__v": 0
+	                  }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Sign up failed. Invalid credentials - both username and password fields are required and username should be unique."
+          }
+        }
+      }
+    },
+    "/account/login": {
+      "post": {
+        "summary": "Log in as user and get authentication token",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "description": "Credentials of user ",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "username": "jimmy",
+                  "password": "password123"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login success.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Sign in success.",
+                  	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1YjRkOGYxMzhmMWFjYzMyYjNmY2JjNzYiLCJpYXQiOjE1MzE4ODYwNjF9.tEkqP-sw7UMdMY1KkdLZbvEt23xEM2eLrwFotcQhzwK"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Login failed. Invalid or incorrect credentials."
+          }
+        }
+      }
+    },
     "/posts": {
       "get": {
         "summary": "List of all available posts",
@@ -70,72 +157,145 @@
         }
       }
     },
-    "/carparks/search": {
+    "/users": {
       "get": {
-        "summary": "Search for carparks",
+        "summary": "List of all users",
         "tags": [
-          "carparks"
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": [
+                    {
+                      "bookmarked": [],
+                  		"likes": [],
+                  		"_id": "5b4d8f138f1acc32b3fcbc76",
+                  		"username": "jimmy",
+                  		"salt": "...",
+                  		"hash": "...",
+                  		"__v": 0,
+                  		"bio": "My bio!",
+                  		"posts": []
+                    },
+                    {
+                      "bookmarked": [],
+                  		"likes": [],
+                  		"_id": "5b4d0f138f1acc32b3gasc76",
+                  		"username": "tom",
+                  		"salt": "...",
+                  		"hash": "...",
+                  		"__v": 0,
+                  		"bio": "Hi I'm Tom!",
+                  		"posts": []
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "summary": "Retrieve a user of that id",
+        "tags": [
+          "users"
         ],
         "parameters": [
           {
-            "in": "query",
-            "name": "keyword",
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the user to retrieve",
             "schema": {
               "type": "string"
-            },
-            "description": "The search keyword that will be matched against the address fields of the carparks"
-          },
-          {
-            "in": "query",
-            "name": "carparkType",
-            "schema": {
-              "type": "string",
-              "enum": ["basement", "surface", "multistorey", "mechanised", "covered", "mechanised_and_surface", "surface_and_multistorey"]
-            },
-            "description": "The type of carpark to search for"
-            
-          },
-          {
-            "in": "query",
-            "name": "systemType",
-            "schema": {
-              "type": "string",
-              "enum": ["electronic", "coupon"]
-            },
-            
-            "description": "The type of the carpark system to search for"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of carparks that matches the search",
+            "description": "User object with the given id",
             "content": {
               "application/json": {
                 "schema": {
-                  "example": [{
-                    "car_park_no": "B67",
-                        "address": "BLK 649A JALAN TENAGA",
-                        "x_coord": "36132.6219",
-                        "y_coord": "34913.1736",
-                        "car_park_type": "MULTI-STOREY CAR PARK",
-                        "type_of_parking_system": "ELECTRONIC PARKING",
-                        "short_term_parking": "WHOLE DAY",
-                        "free_parking": "SUN & PH FR 7AM-10.30PM",
-                        "night_parking": "YES"
-                  },{
-                        "car_park_no": "B72",
-                        "address": "BLK 660A JALAN TENAGA",
-                        "x_coord": "36243.3489",
-                        "y_coord": "35174.2762",
-                        "car_park_type": "MULTI-STOREY CAR PARK",
-                        "type_of_parking_system": "ELECTRONIC PARKING",
-                        "short_term_parking": "WHOLE DAY",
-                        "free_parking": "SUN & PH FR 7AM-10.30PM",
-                        "night_parking": "YES"
-                    }]
+                  "example": {
+                    "bookmarked": [],
+                		"likes": [],
+                		"_id": "5b4d0f138f1acc32b3gasc76",
+                		"username": "tom",
+                		"salt": "...",
+                		"hash": "...",
+                		"__v": 0,
+                		"bio": "Hi I'm Tom!",
+                		"posts": []
+                  }
                 }
               }
             }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "Cannot find user with this id!"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Invalid user id parameter"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a user object of that id ",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the user to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user object of that id",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the user to retrieve",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
           }
         }
       }
