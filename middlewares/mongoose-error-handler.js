@@ -1,5 +1,7 @@
 // Error Handler for routes involving mongoose operations
 const errorHandler = (err, req, res, next) => {
+	// console.log(err);
+
 	if (err.name === "ValidationError") {
 		// will enter here for CastError and ValidatorError (custom, required and unique validators)
 		// for operations involving writing to db
@@ -9,6 +11,11 @@ const errorHandler = (err, req, res, next) => {
 
 	if (err.name === "NotFoundError") {
 		res.status(404).json(err.message);
+		return;
+	}
+
+	if (err.name === "ForbiddenError") {
+		res.status(403).json(err.message);
 		return;
 	}
 
