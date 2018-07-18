@@ -133,7 +133,7 @@ describe.only("POST /posts", () => {
 				caption: "Hello im a test post",
 				image: "https://sampleurl.com"
 			})
-			.set("Authorization", "Bearer " + token);
+			.set("Authorization", "Bearer " + "invalidtoken");
 
 		expect(response.status).toBe(401);
 	});
