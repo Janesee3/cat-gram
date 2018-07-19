@@ -3,14 +3,13 @@ const request = require("supertest");
 const userRouter = require("../routes/user-router");
 const User = require("../models/User");
 const {
+	startUpMongoose,
+	tearDownMongoose,
+	dropDatabase,
 	addFakeData,
 	createMockUser,
 	loginAsMockUser
 } = require("../utility/test-utility");
-
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const mongod = new MongoMemoryServer();
-const mongoose = require("mongoose");
 
 const app = express();
 userRouter(app);
@@ -26,21 +25,10 @@ let token;
 
 /**** SETUP ***/
 
-beforeAll(async () => {
-	jest.setTimeout(120000);
-
-	const uri = await mongod.getConnectionString();
-	await mongoose.connect(uri);
-});
-
-afterAll(() => {
-	mongoose.disconnect();
-	mongod.stop();
-});
-
+beforeAll(startUpMongoose);
+afterAll(tearDownMongoose);
+beforeEach(dropDatabase);
 beforeEach(async () => {
-	mongoose.connection.db.dropDatabase();
-
 	await addFakeData(mockUsers, mockPosts);
 	authenticatedUser = (await createMockUser(credentials)).user;
 	token = (await loginAsMockUser(credentials)).token;
