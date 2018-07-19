@@ -26,18 +26,36 @@ router.post(
 			user = await User.findById(req.body.userId);
 			user.bookmarked.push(req.body.postId.toString());
 			user = await user.save();
+			res.json(user);
 		} catch (err) {
 			next(err);
-			return;
 		}
-
-		res.json(user);
 	}
 );
 
-router.post("/removeFromBookmarks", (req, res, next) => {
-	res.json(req.body.postId);
-});
+router.post(
+	"/removeFromBookmarks",
+	isUserAuthorisedForBookmarkAction,
+	async (req, res, next) => {
+		try {
+			let post = await Post.findById(req.body.postId);
+
+			if (!post) {
+				next(getNotFoundError(POST_NOT_FOUND_MSG));
+				return;
+			}
+
+			user = await User.findById(req.body.userId);
+			user.bookmarked = user.bookmarked.filter(id => {
+				return id.toString() !== req.body.postId;
+			});
+			user = await user.save();
+			res.json(user);
+		} catch (err) {
+			next(err);
+		}
+	}
+);
 
 module.exports = app => {
 	app.use(express.json());
