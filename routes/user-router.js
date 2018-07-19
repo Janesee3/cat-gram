@@ -4,7 +4,9 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/mongoose-error-handler");
 const isUserAuthorisedForAction = require("../middlewares/user-action-authorisation-checker");
+const { getNotFoundError } = require('../utility/custom-errors');
 
+const ERR_USER_NOT_FOUND_MSG = "Cannot find user with this id!";
 const unprotectedRoutes = express.Router();
 
 unprotectedRoutes.get("/", async (req, res, next) => {
@@ -26,7 +28,7 @@ unprotectedRoutes.get("/", async (req, res, next) => {
 unprotectedRoutes.get("/:id", async (req, res, next) => {
 	try {
 		let user = await User.findById(req.params.id).populate("bookmarked");
-		if (!user) return _fireNotFoundError(res, next);
+		if (!user) return next(getNotFoundError(ERR_USER_NOT_FOUND_MSG));
 		res.json(await _getJointUserAndPosts(user));
 	} catch (err) {
 		next(err);
@@ -43,7 +45,7 @@ protectedRoutes.put(
 			let user = await User.findByIdAndUpdate(req.params.id, req.body, {
 				new: true
 			});
-			if (!user) return _fireNotFoundError(res, next);
+			if (!user) return next(getNotFoundError(ERR_USER_NOT_FOUND_MSG));
 			res.json(await _getJointUserAndPosts(user));
 		} catch (err) {
 			next(err);
@@ -57,7 +59,7 @@ protectedRoutes.delete(
 	async (req, res, next) => {
 		try {
 			let user = await User.findByIdAndDelete(req.params.id);
-			if (!user) return _fireNotFoundError(res, next);
+			if (!user) return next(getNotFoundError(ERR_USER_NOT_FOUND_MSG));
 			res.json({
 				message: `Successfully deleted user with ID ${req.params.id}.`
 			});
@@ -71,14 +73,6 @@ const _getJointUserAndPosts = async user => {
 	let posts = await Post.find({ author: user._id });
 	let newUser = { ...user.toJSON(), posts: posts };
 	return newUser;
-};
-
-const _fireNotFoundError = (res, next) => {
-	let error = {
-		name: "NotFoundError",
-		message: "Cannot find user with this id!"
-	};
-	next(error);
 };
 
 module.exports = app => {
