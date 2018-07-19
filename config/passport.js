@@ -7,7 +7,7 @@ const User = require("../models/User");
 
 const jwtOptions = {
 	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-	secretOrKey: "some_secret"
+	secretOrKey: process.env.JWT_SECRET || "some_secret"
 };
 
 // Will be called during passport.authenticate
