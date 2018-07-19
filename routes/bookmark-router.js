@@ -1,10 +1,10 @@
 const express = require("express");
 const { passport } = require("../config/passport");
-const Post = require("../models/Post");
-const User = require("../models/User");
 const { getNotFoundError } = require("../utility/custom-errors");
 const errorHandler = require("../middlewares/error-handler");
 const isUserAuthorisedForBookmarkAction = require("../middlewares/bookmark-authorisation-checker");
+const Post = require("../models/Post");
+const User = require("../models/User");
 
 const POST_NOT_FOUND_MSG = "No such post exists!";
 
@@ -14,18 +14,13 @@ router.post(
 	"/addToBookmarks",
 	isUserAuthorisedForBookmarkAction,
 	async (req, res, next) => {
-		let user;
 		try {
 			let post = await Post.findById(req.body.postId);
+			let user = await User.findById(req.body.userId);
 
-			if (!post) {
-				next(getNotFoundError(POST_NOT_FOUND_MSG));
-				return;
-			}
+			if (!post) return next(getNotFoundError(POST_NOT_FOUND_MSG));
 
-			user = await User.findById(req.body.userId);
-			user.bookmarked.push(req.body.postId.toString());
-			user = await user.save();
+			user = await addPostToBookmarksAndSave(post, user)
 			res.json(user);
 		} catch (err) {
 			next(err);
@@ -39,23 +34,29 @@ router.post(
 	async (req, res, next) => {
 		try {
 			let post = await Post.findById(req.body.postId);
+			let user = await User.findById(req.body.userId);
 
-			if (!post) {
-				next(getNotFoundError(POST_NOT_FOUND_MSG));
-				return;
-			}
+			if (!post) return next(getNotFoundError(POST_NOT_FOUND_MSG));
 
-			user = await User.findById(req.body.userId);
-			user.bookmarked = user.bookmarked.filter(id => {
-				return id.toString() !== req.body.postId;
-			});
-			user = await user.save();
+			user = await removePostFromBookmarksAndSave(post, user);
 			res.json(user);
 		} catch (err) {
 			next(err);
 		}
 	}
 );
+
+const addPostToBookmarksAndSave = async (post, user) => {
+	user.bookmarked.push(post._id.toString());
+	return await user.save();
+}
+
+const removePostFromBookmarksAndSave = async (post, user) => {
+	user.bookmarked = user.bookmarked.filter(bookmarkId => {
+		return bookmarkId.toString() !== post._id.toString();
+	});
+	return await user.save();
+}
 
 module.exports = app => {
 	app.use(express.json());
