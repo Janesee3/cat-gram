@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const User = require('./User');
+const User = require("./User");
 
 // Create schema
 const postSchema = mongoose.Schema(
@@ -17,7 +17,7 @@ const postSchema = mongoose.Schema(
 		},
 		caption: { type: String, required: [true, "Caption is required!"] },
 		image: { type: String, required: [true, "Image url is required!"] },
-		likes: Number
+		likes: { type: Number, default: 0 }
 	},
 	{ timestamps: true }
 );
