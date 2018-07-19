@@ -9,7 +9,7 @@ const accountRouter = require("./routes/account-router");
 const postRouter = require("./routes/post-router");
 const userRouter = require("./routes/user-router");
 const bookmarkRouter = require("./routes/bookmark-router");
-
+const likesRouter = require("./routes/likes-router");
 
 // Open DB connection
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/cat-gram");
@@ -39,6 +39,7 @@ accountRouter(app);
 userRouter(app);
 postRouter(app);
 bookmarkRouter(app);
+likesRouter(app);
 
 // general 404 error handler
 app.use((req, res, next) => {
