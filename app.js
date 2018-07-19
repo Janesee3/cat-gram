@@ -8,6 +8,7 @@ const indexRouter = require("./routes/index-router");
 const accountRouter = require("./routes/account-router");
 const postRouter = require("./routes/post-router");
 const userRouter = require("./routes/user-router");
+const bookmarkRouter = require("./routes/bookmark-router");
 
 const Post = require("./models/Post");
 const User = require("./models/User");
@@ -56,6 +57,7 @@ indexRouter(app);
 accountRouter(app);
 userRouter(app);
 postRouter(app);
+bookmarkRouter(app);
 
 // general 404 error handler
 app.use((req, res, next) => {
