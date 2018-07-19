@@ -3,7 +3,7 @@ const { passport } = require("../config/passport");
 const Post = require("../models/Post");
 const User = require("../models/User");
 const { getNotFoundError } = require("../utility/custom-errors");
-const errorHandler = require("../middlewares/mongoose-error-handler");
+const errorHandler = require("../middlewares/error-handler");
 const isUserAuthorisedForBookmarkAction = require("../middlewares/bookmark-authorisation-checker");
 
 const POST_NOT_FOUND_MSG = "No such post exists!";

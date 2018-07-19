@@ -2,7 +2,7 @@ const express = require("express");
 const { passport } = require("../config/passport");
 const User = require("../models/User");
 const Post = require("../models/Post");
-const errorHandler = require("../middlewares/mongoose-error-handler");
+const errorHandler = require("../middlewares/error-handler");
 const isUserAuthorisedForAction = require("../middlewares/user-action-authorisation-checker");
 const { getNotFoundError } = require('../utility/custom-errors');
 

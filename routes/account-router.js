@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const { jwtOptions } = require("../config/passport");
 const User = require("../models/User");
-const errorHandler = require("../middlewares/mongoose-error-handler");
+const errorHandler = require("../middlewares/error-handler");
 
 const router = express.Router();
 router.use(express.json());
