@@ -14,7 +14,16 @@ const getForbiddenError = message => {
 	return error;
 };
 
+const getBadRequestError = message => {
+	let error = {
+		name: "BadRequestError",
+		message: message
+	};
+	return error;
+};
+
 module.exports = {
 	getNotFoundError,
-	getForbiddenError
+	getForbiddenError,
+	getBadRequestError
 };
