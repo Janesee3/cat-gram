@@ -131,14 +131,20 @@
                 "schema": {
                   "example": [
                     {
+                      "_id": "5b4d0f138f1azc32b3absc22",
                       "author": "5b4c383b6eb02e0a56534c6g",
-                      "caption": "Cheesy caption for post1",
-                      "image": "https://sampleurl.com"
+                      "caption": "My new post",
+                      "image": "https://sampleurl.com",
+                  		"createdAt": "2018-07-19T13:18:32.164Z",
+                  		"updatedAt": "2018-07-19T13:18:32.164Z"
                     },
                     {
-                      "author": "5b4c383b6eb02e0a56334c6d",
-                      "caption": "Meow meow caption",
-                      "image": "https://sampleurl.com"
+                      "_id": "5b4d0f138f1acc32b3gasc76",
+                      "author": "5b4c383b6eb02e0a56534c6g",
+                      "caption": "My new post",
+                      "image": "https://sampleurl.com",
+                  		"createdAt": "2018-07-19T13:18:32.164Z",
+                  		"updatedAt": "2018-07-19T13:18:32.164Z"
                     }
                   ]
                 }
@@ -176,9 +182,13 @@
               "application/json": {
                 "schema": {
                   "example": {
+                    "likes": "1",
+                		"_id": "5b4d0f138f1acc32b3gasc76",
                     "author": "5b4c383b6eb02e0a56534c6g",
                     "caption": "My new post",
-                    "image": "https://sampleurl.com"
+                    "image": "https://sampleurl.com",
+                		"createdAt": "2018-07-19T13:18:32.164Z",
+                		"updatedAt": "2018-07-19T13:18:32.164Z"
                   }
                 }
               }
@@ -343,13 +353,231 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "Successfully deleted the specified user"
           },
           "401": {
             "$ref": "#/components/responses/UnauthenticatedError"
           },
           "403": {
             "$ref": "#/components/responses/UnauthorisedUserActionError"
+          }
+        }
+      }
+    },
+    "/likes/likePost": {
+      "post": {
+        "summary": "Add a specified post to the specified user's liked list, and increment the like counter of the post.",
+        "tags": [
+          "likes"
+        ],
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "postId - ID of the post to be liked ; userID - ID of the user liking this post",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "postId": "5b4d0f138f1acc32b3gasc76",
+                  "userId": "5b4c383b6eb02e0a56534c6g"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post object with the updated counter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "likes": "32",
+                		"_id": "5b4d0f138f1acc32b3gasc76",
+                		"author": "{ ... }",
+                		"caption": "Hello im a test post",
+                		"image": "https://sampleurl.com",
+                		"createdAt": "2018-07-19T13:18:32.164Z",
+                		"updatedAt": "2018-07-19T13:18:32.164Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User has already liked the specified post before"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      }
+    },
+    "/likes/unlikePost": {
+      "post": {
+        "summary": "Remove a specified post from the specified user's liked list, and decrement the like counter of the post.",
+        "tags": [
+          "likes"
+        ],
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "postId - ID of the post to be unliked ; userID - ID of the user unliking this post",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "postId": "5b4d0f138f1acc32b3gasc76",
+                  "userId": "5b4c383b6eb02e0a56534c6g"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post object with the updated counter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "likes": "31",
+                		"_id": "5b4d0f138f1acc32b3gasc76",
+                		"author": "{ ... }",
+                		"caption": "Hello im a test post",
+                		"image": "https://sampleurl.com",
+                		"createdAt": "2018-07-19T13:18:32.164Z",
+                		"updatedAt": "2018-07-19T13:18:32.164Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User has not liked the specified post before" 
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      }
+    },
+    "/bookmarks/addToBookmark": {
+      "post": {
+        "summary": "Add a specified post to the specified user's bookmark list",
+        "tags": [
+          "bookmarks"
+        ],
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "postId - ID of the post to be bookmarked ; userID - ID of the user bookmarking this post",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "postId": "5b4d0f138f1acc32b3gasc76",
+                  "userId": "5b4c383b6eb02e0a56534c6g"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User object with the updated bookmark list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "bookmarked": ["5b4d0f138f1acc32b3gasc76"],
+                		"likes": [],
+                		"_id": "5b4c383b6eb02e0a56534c6g",
+                		"username": "tom",
+                		"salt": "...",
+                		"hash": "...",
+                		"bio": "Hi I'm Tom!",
+                		"posts": []
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User has already bookmarked the specified post before"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
+          },
+          "404": {
+            "description": "Post not found"
+          }
+        }
+      }
+    },
+    "/bookmarks/removeFromBookmark": {
+      "post": {
+        "summary": "Remove a specified post from the specified user's bookmark list",
+        "tags": [
+          "bookmarks"
+        ],
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "description": "postId - ID of the post to be un-bookmarked ; userID - ID of the user doing this",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "example": {
+                  "postId": "5b4d0f138f1acc32b3gasc76",
+                  "userId": "5b4c383b6eb02e0a56534c6g"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post object with the updated counter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "bookmarked": [],
+                		"likes": [],
+                		"_id": "5b4c383b6eb02e0a56534c6g",
+                		"username": "tom",
+                		"salt": "...",
+                		"hash": "...",
+                		"bio": "Hi I'm Tom!",
+                		"posts": []
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User has not bookmarked the specified post before" 
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
+          },
+          "404": {
+            "description": "Post not found"
           }
         }
       }
