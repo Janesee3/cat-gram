@@ -2,10 +2,14 @@ const express = require("express");
 const request = require("supertest");
 const accountRouter = require("../routes/account-router");
 const User = require("../models/User");
+const {
+	startUpMongoose,
+	tearDownMongoose
+} = require("../utility/test-utility");
 
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const mongod = new MongoMemoryServer();
-const mongoose = require("mongoose");
+// const { MongoMemoryServer } = require("mongodb-memory-server");
+// const mongod = new MongoMemoryServer();
+// const mongoose = require("mongoose");
 
 const app = express();
 accountRouter(app);
@@ -15,7 +19,7 @@ const credentials = {
 	password: "1234"
 };
 
-_createMockUser = async () => {
+const _createMockUser = async () => {
 	let response = await request(app)
 		.post("/account/signup")
 		.send(credentials);
@@ -25,17 +29,8 @@ _createMockUser = async () => {
 
 /**** SETUP ***/
 
-beforeAll(async () => {
-	jest.setTimeout(120000);
-
-	const uri = await mongod.getConnectionString();
-	await mongoose.connect(uri);
-});
-
-afterAll(() => {
-	mongoose.disconnect();
-	mongod.stop();
-});
+beforeAll(startUpMongoose);
+afterAll(tearDownMongoose);
 
 /**** TEST CASES ***/
 
@@ -100,7 +95,7 @@ describe("POST /account/signup", () => {
 
 describe("POST /login", () => {
 	beforeAll(async () => {
-		await _createMockUser(credentials);
+		await _createMockUser();
 	});
 
 	it("should return status 200 and a token after a valid sign in ", async () => {

@@ -5,65 +5,37 @@ const Post = require("../models/Post");
 const {
 	addFakeData,
 	createMockUser,
-	loginAsMockUser
+	loginAsMockUser,
+	startUpMongoose,
+	tearDownMongoose,
+	dropDatabase
 } = require("../utility/test-utility");
 
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const mongod = new MongoMemoryServer();
-const mongoose = require("mongoose");
-
-const app = express();
-postRouter(app);
-
+// Mock Data
 const mockUsers = {};
 const mockPosts = {};
 const credentials = {
 	username: "jane",
 	password: "1234"
 };
-let authenticatedUser = {};
 let authenticatedPost = {};
 let token;
 
-// What i need //
-// create a mock user (need to use sign up route)
-// login with this user credentials (need to use login route)
-// retrieve the jwt token and store it in the test file
-// make use of the token to test all the authorised routes here
-// then test for the deauthorised path also
+const app = express();
+postRouter(app);
 
 /**** SETUP ***/
 
-beforeAll(async () => {
-	jest.setTimeout(120000);
+beforeAll(startUpMongoose);
+afterAll(tearDownMongoose);
+beforeEach(dropDatabase);
 
-	const uri = await mongod.getConnectionString();
-	await mongoose.connect(uri);
-});
-
-afterAll(() => {
-	mongoose.disconnect();
-	mongod.stop();
-});
-
+// Setup required fixtures
 beforeEach(async () => {
-	mongoose.connection.db.dropDatabase();
-
 	await addFakeData(mockUsers, mockPosts);
-
-	authenticatedUser = (await createMockUser(credentials)).user;
+	await createMockUser(credentials);
 	token = (await loginAsMockUser(credentials)).token;
-
-	// REFACTOR!!!!!!!!!!!!!
-	let response = await request(app)
-		.post("/posts")
-		.send({
-			caption: "Post by authenticated user",
-			image: "randomurl.com"
-		})
-		.set("Authorization", "Bearer " + token);
-
-	authenticatedPost = response.body.post;
+	authenticatedPost = await _createAuthenticatedPost();
 });
 
 /****  TEST CASES *****/
@@ -278,3 +250,16 @@ describe("DELETE /posts/id", () => {
 		expect(response.status).toBe(403);
 	});
 });
+
+const _createAuthenticatedPost = async () => {
+	let response = await request(app)
+		.post("/posts")
+		.send({
+			caption: "Post by authenticated user",
+			image: "randomurl.com"
+		})
+		.set("Authorization", "Bearer " + token);
+
+	expect(response.status).toBe(201);
+	return response.body.post;
+};

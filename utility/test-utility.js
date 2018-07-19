@@ -1,3 +1,6 @@
+
+/**** MOCK DATA ****/
+
 const Post = require("../models/Post");
 const User = require("../models/User");
 
@@ -33,7 +36,7 @@ const _addMockPosts = async (mockUsers, mockPosts) => {
 	mockPosts.post2 = await post2.save();
 };
 
-addFakeData = async (mockUsers, mockPosts) => {
+const addFakeData = async (mockUsers, mockPosts) => {
 	await _addMockUsers(mockUsers);
 	await _addMockPosts(mockUsers, mockPosts);
 };
@@ -62,8 +65,32 @@ const loginAsMockUser = async credentials => {
 	return response.body;
 };
 
+/***** MONGOOSE MEMORY SERVER *****/
+
+const { MongoMemoryServer } = require("mongodb-memory-server");
+const mongod = new MongoMemoryServer();
+const mongoose = require("mongoose");
+
+const startUpMongoose = async () => {
+	jest.setTimeout(120000);
+	const uri = await mongod.getConnectionString();
+	await mongoose.connect(uri);
+}
+
+const tearDownMongoose = async () => {
+	mongoose.disconnect();
+	mongod.stop();
+}
+
+const dropDatabase = async () => {
+	mongoose.connection.db.dropDatabase();
+}
+
 module.exports = {
 	addFakeData,
 	createMockUser,
-	loginAsMockUser
+	loginAsMockUser,
+	startUpMongoose,
+	tearDownMongoose,
+	dropDatabase
 };
