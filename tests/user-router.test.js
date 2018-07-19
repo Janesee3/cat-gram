@@ -30,7 +30,7 @@ afterAll(tearDownMongoose);
 beforeEach(dropDatabase);
 beforeEach(async () => {
 	await addFakeData(mockUsers, mockPosts);
-	authenticatedUser = (await createMockUser(credentials)).user;
+	authenticatedUser = await createMockUser(credentials);
 	token = (await loginAsMockUser(credentials)).token;
 });
 

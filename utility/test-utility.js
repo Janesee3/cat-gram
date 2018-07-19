@@ -53,7 +53,7 @@ const createMockUser = async credentials => {
 		.send(credentials);
 
 	expect(response.statusCode).toBe(200);
-	return response.body;
+	return response.body.user;
 };
 
 const loginAsMockUser = async credentials => {

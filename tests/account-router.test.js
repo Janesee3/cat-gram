@@ -7,10 +7,6 @@ const {
 	tearDownMongoose
 } = require("../utility/test-utility");
 
-// const { MongoMemoryServer } = require("mongodb-memory-server");
-// const mongod = new MongoMemoryServer();
-// const mongoose = require("mongoose");
-
 const app = express();
 accountRouter(app);
 
