@@ -9,6 +9,26 @@
       "url": "https://cat-gram.herokuapp.com/"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "UnauthenticatedError": {
+        "description": "Access token is missing or invalid"
+      },
+      "UnauthorisedPostActionError": {
+        "description": "Access token must be generated from the author of this post."
+      },
+      "UnauthorisedUserActionError": {
+        "description": "Access token must be generated from the same user of this action."
+      }
+    }
+  },
   "paths": {
     "/account/signup": {
       "post": {
@@ -52,7 +72,7 @@
             }
           },
           "400": {
-            "description": "Sign up failed. Invalid credentials - both username and password fields are required and username should be unique."
+            "description": "Sign up failed. Request body has missing or invalid fields."
           }
         }
       }
@@ -128,9 +148,12 @@
         }
       },
       "post": {
-        "summary": "Create a post",
+        "summary": "Create a post as the currently authenticated user",
         "tags": [
           "posts"
+        ],
+        "security": [
+          { "bearerAuth": [] }
         ],
         "requestBody": {
           "description": "Post object to be added",
@@ -139,7 +162,6 @@
             "application/json": {
               "schema": {
                 "example": {
-                  "author": "5b4c383b6eb02e0a56534c6g",
                   "caption": "My new post",
                   "image": "https://sampleurl.com"
                 }
@@ -149,10 +171,24 @@
         },
         "responses": {
           "201": {
-            "description": "Post created successfully."
+            "description": "Post created successfully and returned in the repsonse.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "author": "5b4c383b6eb02e0a56534c6g",
+                    "caption": "My new post",
+                    "image": "https://sampleurl.com"
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Request body is not a valid Post object"
+            "description": "Request body is not a valid Post object - some fields are missing/invalid."
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
           }
         }
       }
@@ -260,6 +296,9 @@
         "tags": [
           "users"
         ],
+        "security": [
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "user_id",
@@ -274,6 +313,12 @@
         "responses": {
           "200": {
             "description": ""
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnauthorisedUserActionError"
           }
         }
       },
@@ -282,6 +327,9 @@
         "tags": [
           "users"
         ],
+        "security": [
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "user_id",
@@ -296,6 +344,12 @@
         "responses": {
           "200": {
             "description": ""
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnauthorisedUserActionError"
           }
         }
       }
@@ -354,6 +408,9 @@
         "tags": [
           "posts"
         ],
+        "security": [
+          { "bearerAuth": [] }
+        ],
         "parameters": [
           {
             "name": "post_id",
@@ -393,17 +450,14 @@
               }
             }
           },
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
+          },
+          "403": {
+            "$ref": "#/components/responses/UnauthorisedPostActionError"
+          },
           "404": {
-            "description": "Post not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "message": "Cannot find post with this id!"
-                  }
-                }
-              }
-            }
+            "description": "Post not found"
           },
            "500": {
             "description": "Invalid post id parameter"
@@ -414,6 +468,9 @@
         "summary": "Delete post with the specified id",
         "tags": [
           "posts"
+        ],
+        "security": [
+          { "bearerAuth": [] }
         ],
         "parameters": [
           {
@@ -439,19 +496,16 @@
               }
             }
           },
-          "404": {
-            "description": "Post not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "example": {
-                    "message": "Cannot find post with this id!"
-                  }
-                }
-              }
-            }
+          "401": {
+            "$ref": "#/components/responses/UnauthenticatedError"
           },
-          "500": {
+          "403": {
+            "$ref": "#/components/responses/UnauthorisedPostActionError"
+          },
+          "404": {
+            "description": "Post not found"
+          },
+           "500": {
             "description": "Invalid post id parameter"
           }
         }
