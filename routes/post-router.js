@@ -28,7 +28,6 @@ unprotectedRoutes.get("/:id", async (req, res, next) => {
 const protectedRoutes = express.Router();
 
 protectedRoutes.post("/", async (req, res, next) => {
-	console.log("posting to /posts..");
 	const newPost = new Post({
 		author: req.user._id, // id of the currently authenticated user
 		caption: req.body.caption,
