@@ -110,8 +110,8 @@ describe("POST /likes/likePost", () => {
 	});
 });
 
-describe.only("POST /likes/unlikePost", () => {
-	it.only("should return status 200 and decrement likes counter of specified post by 1 (when valid auth token is given)", async () => {
+describe("POST /likes/unlikePost", () => {
+	it("should return status 200 and decrement likes counter of specified post by 1 (when valid auth token is given)", async () => {
 		await _likePost(mockPosts.post1._id, authenticatedUser._id, token);
 
 		let res = await _unlikePost(

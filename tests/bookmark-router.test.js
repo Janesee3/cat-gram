@@ -196,14 +196,14 @@ describe("POST /bookmarks/removeFromBookmarks", () => {
 		expect(user.bookmarked.length).toBe(0);
 	});
 
-	it("should return status 200 even if if specified postId does not exist in the user's bookmark list", async () => {
+	it("should return status 400 if specified postId does not exist in the user's bookmark list", async () => {
 		let response = await _removePostFromBookmarks(
 			mockPosts.post1._id,
 			authenticatedUser._id,
 			token
 		);
 
-		expect(response.status).toBe(200);
+		expect(response.status).toBe(400);
 		let user = await User.findById(authenticatedUser._id);
 		expect(user.bookmarked.length).toBe(0);
 	});
