@@ -23,7 +23,16 @@ const userSchema = mongoose.Schema({
 			message: "Cannot have duplicates in the bookmark list!"
 		}
 	},
-	likes: [{ type: ObjectId, ref: "Post" }],
+	likes: {
+		type: [{ type: ObjectId, ref: "Post" }],
+		validate: {
+			validator: likesArray => {
+				const postStrings = likesArray.map(id => id.toString()); // Convert to string so that Set will not use object equality
+				return postStrings.length === new Set(postStrings).size;
+			},
+			message: "Cannot have duplicates in the likes list!"
+		}
+	},
 	hash: String,
 	salt: String
 });
