@@ -3,7 +3,9 @@ const { passport } = require("../config/passport");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/mongoose-error-handler");
 const isUserAuthorisedForPostAction = require("../middlewares/post-action-authorisation-checker");
+const { getNotFoundError } = require('../utility/custom-errors');
 
+const ERR_POST_NOT_FOUND_MSG = "Cannot find post with this id!";
 const unprotectedRoutes = express.Router();
 
 unprotectedRoutes.get("/", async (req, res, next) => {
@@ -18,7 +20,7 @@ unprotectedRoutes.get("/", async (req, res, next) => {
 unprotectedRoutes.get("/:id", async (req, res, next) => {
 	try {
 		let post = await Post.findById(req.params.id).populate("author");
-		if (!post) return _fireNotFoundError(res, next);
+		if (!post) return next(getNotFoundError(ERR_POST_NOT_FOUND_MSG));
 		res.json(post);
 	} catch (err) {
 		next(err);
@@ -53,7 +55,7 @@ protectedRoutes.put(
 			let post = await Post.findByIdAndUpdate(req.params.id, req.body, {
 				new: true
 			});
-			if (!post) return _fireNotFoundError(res, next);
+			if (!post) return next(getNotFoundError(ERR_POST_NOT_FOUND_MSG));
 			res.json(post);
 		} catch (err) {
 			next(err);
@@ -67,7 +69,7 @@ protectedRoutes.delete(
 	async (req, res, next) => {
 		try {
 			let post = await Post.findByIdAndDelete(req.params.id);
-			if (!post) return _fireNotFoundError(res, next);
+			if (!post) return next(getNotFoundError(ERR_POST_NOT_FOUND_MSG));
 			res.json({
 				message: `Successfully deleted post with ID ${req.params.id}.`
 			});
@@ -76,14 +78,6 @@ protectedRoutes.delete(
 		}
 	}
 );
-
-const _fireNotFoundError = (res, next) => {
-	let err = {
-		name: "NotFoundError",
-		message: "Cannot find post with this id!"
-	};
-	next(err);
-};
 
 module.exports = app => {
 	app.use(express.json());
