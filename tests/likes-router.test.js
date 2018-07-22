@@ -101,13 +101,6 @@ describe("POST /likes/likePost", () => {
 		expect(res.status).toBe(401);
 		expect(post.likes).toBe(0);
 	});
-
-	it("should return status 403 user id in request does not tally with the auth token ", async () => {
-		let res = await _likePost(mockPosts.post1._id, mockUsers.user1._id, token);
-		let post = await Post.findById(mockPosts.post1._id);
-		expect(res.status).toBe(403);
-		expect(post.likes).toBe(0);
-	});
 });
 
 describe("POST /likes/unlikePost", () => {
@@ -153,17 +146,5 @@ describe("POST /likes/unlikePost", () => {
 		let post = await Post.findById(mockPosts.post1._id);
 		expect(res.status).toBe(401);
 		expect(post.likes).toBe(0);
-	});
-
-	it("should return status 403 user id in request does not tally with the auth token ", async () => {
-		await _likePost(mockPosts.post1._id, authenticatedUser._id, token);
-		let res = await _unlikePost(
-			mockPosts.post1._id,
-			mockUsers.user1._id,
-			token
-		);
-		let post = await Post.findById(mockPosts.post1._id);
-		expect(res.status).toBe(403);
-		expect(post.likes).toBe(1);
 	});
 });
