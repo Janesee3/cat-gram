@@ -3,14 +3,14 @@ const { passport } = require("../config/passport");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/error-handler");
 const isUserAuthorisedForPostAction = require("../middlewares/post-action-authorisation-checker");
-const { getNotFoundError } = require('../utility/custom-errors');
+const { getNotFoundError } = require("../utility/custom-errors");
 
 const ERR_POST_NOT_FOUND_MSG = "Cannot find post with this id!";
 const unprotectedRoutes = express.Router();
 
 unprotectedRoutes.get("/", async (req, res, next) => {
 	try {
-		const posts = await Post.find().populate("author"); // 'author' here refers to the KEY name inside the Post model!
+		const posts = await Post.find().populate("author", "username bio _id"); // 'author' here refers to the KEY name inside the Post model!
 		res.json(posts);
 	} catch (err) {
 		next(err);
@@ -19,7 +19,10 @@ unprotectedRoutes.get("/", async (req, res, next) => {
 
 unprotectedRoutes.get("/:id", async (req, res, next) => {
 	try {
-		let post = await Post.findById(req.params.id).populate("author");
+		let post = await Post.findById(req.params.id).populate(
+			"author",
+			"username bio _id"
+		);
 		if (!post) return next(getNotFoundError(ERR_POST_NOT_FOUND_MSG));
 		res.json(post);
 	} catch (err) {
