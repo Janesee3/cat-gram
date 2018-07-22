@@ -4,7 +4,7 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const errorHandler = require("../middlewares/error-handler");
 const isUserAuthorisedForAction = require("../middlewares/user-action-authorisation-checker");
-const { getNotFoundError } = require('../utility/custom-errors');
+const { getNotFoundError } = require("../utility/custom-errors");
 
 const ERR_USER_NOT_FOUND_MSG = "Cannot find user with this id!";
 const unprotectedRoutes = express.Router();
@@ -70,7 +70,7 @@ protectedRoutes.delete(
 
 const _getJointUserAndPosts = async user => {
 	let posts = await Post.find({ author: user._id });
-	return { ...user.toJSON(), posts: posts };
+	return { ...user.toDisplay(), posts: posts };
 };
 
 module.exports = app => {
