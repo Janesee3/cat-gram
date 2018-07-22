@@ -5,7 +5,6 @@ const {
 	getBadRequestError
 } = require("../utility/custom-errors");
 const errorHandler = require("../middlewares/error-handler");
-const isUserAuthorisedForBookmarkAction = require("../middlewares/bookmark-authorisation-checker");
 const Post = require("../models/Post");
 const User = require("../models/User");
 
