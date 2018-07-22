@@ -11,7 +11,7 @@ const unprotectedRoutes = express.Router();
 
 unprotectedRoutes.get("/", async (req, res, next) => {
 	try {
-		let users = await User.find().populate("bookmarked");
+		let users = await User.find();
 
 		let promises = users.map(user => {
 			return _getJointUserAndPosts(user);
@@ -26,7 +26,7 @@ unprotectedRoutes.get("/", async (req, res, next) => {
 
 unprotectedRoutes.get("/:id", async (req, res, next) => {
 	try {
-		let user = await User.findById(req.params.id).populate("bookmarked");
+		let user = await User.findById(req.params.id);
 		if (!user) return next(getNotFoundError(ERR_USER_NOT_FOUND_MSG));
 		res.json(await _getJointUserAndPosts(user));
 	} catch (err) {
