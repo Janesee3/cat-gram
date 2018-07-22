@@ -1,4 +1,3 @@
-
 /**** MOCK DATA ****/
 
 const Post = require("../models/Post");
@@ -53,7 +52,7 @@ const createMockUser = async credentials => {
 		.send(credentials);
 
 	expect(response.statusCode).toBe(200);
-	return response.body.user;
+	return response.body;
 };
 
 const loginAsMockUser = async credentials => {
@@ -75,16 +74,16 @@ const startUpMongoose = async () => {
 	jest.setTimeout(120000);
 	const uri = await mongod.getConnectionString();
 	await mongoose.connect(uri);
-}
+};
 
 const tearDownMongoose = async () => {
 	mongoose.disconnect();
 	mongod.stop();
-}
+};
 
 const dropDatabase = async () => {
 	mongoose.connection.db.dropDatabase();
-}
+};
 
 module.exports = {
 	addFakeData,

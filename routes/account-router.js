@@ -18,7 +18,7 @@ router.post("/signup", async (req, res, next) => {
 
 	try {
 		await user.save();
-		res.json({ user });
+		res.json(user.toDisplay());
 	} catch (err) {
 		next(err);
 	}
