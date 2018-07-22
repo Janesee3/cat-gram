@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const { jwtOptions } = require("../config/passport");
 const User = require("../models/User");
 const errorHandler = require("../middlewares/error-handler");
+const { getValidationError } = require("../utility/custom-errors");
 
 const router = express.Router();
 router.use(express.json());
@@ -10,11 +11,7 @@ router.use(express.json());
 router.post("/signup", async (req, res, next) => {
 	const { username, password } = req.body;
 
-	if (!password) {
-		let error = { name: "ValidationError", message: "password is required!" };
-		next(error);
-		return;
-	}
+	if (!password) return next (getValidationError("password is required!"));
 
 	const user = new User({ username });
 	user.setHashedPassword(password);
@@ -33,8 +30,7 @@ router.post("/login", async (req, res) => {
 	const user = await User.findOne({ username });
 
 	if (!user) {
-		res.status(401).json({ message: "No such user found." });
-		return;
+		return res.status(401).json({ message: "No such user found." });
 	}
 
 	if (user.validatePassword(password)) {

@@ -13,12 +13,11 @@ unprotectedRoutes.get("/", async (req, res, next) => {
 	try {
 		let users = await User.find().populate("bookmarked");
 
-		let promises = users.map(async user => {
-			// will return an array of promises
-			return await _getJointUserAndPosts(user);
+		let promises = users.map(user => {
+			return _getJointUserAndPosts(user);
 		});
-
 		let results = await Promise.all(promises);
+
 		res.json(results);
 	} catch (err) {
 		next(err);
@@ -71,8 +70,7 @@ protectedRoutes.delete(
 
 const _getJointUserAndPosts = async user => {
 	let posts = await Post.find({ author: user._id });
-	let newUser = { ...user.toJSON(), posts: posts };
-	return newUser;
+	return { ...user.toJSON(), posts: posts };
 };
 
 module.exports = app => {
