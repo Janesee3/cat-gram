@@ -1,6 +1,11 @@
+const ERR_NOT_FOUND = "NotFoundError";
+const ERR_FORBIDDEN = "ForbiddenError";
+const ERR_BAD_REQUEST = "BadRequestError";
+const ERR_VALIDATOR = "ValidationError";
+
 const getNotFoundError = message => {
 	let error = {
-		name: "NotFoundError",
+		name: ERR_NOT_FOUND,
 		message: message
 	};
 	return error;
@@ -8,7 +13,7 @@ const getNotFoundError = message => {
 
 const getForbiddenError = message => {
 	let error = {
-		name: "ForbiddenError",
+		name: ERR_FORBIDDEN,
 		message: message
 	};
 	return error;
@@ -16,7 +21,15 @@ const getForbiddenError = message => {
 
 const getBadRequestError = message => {
 	let error = {
-		name: "BadRequestError",
+		name: ERR_BAD_REQUEST,
+		message: message
+	};
+	return error;
+};
+
+const getValidationError = message => {
+	let error = {
+		name: ERR_VALIDATOR,
 		message: message
 	};
 	return error;
@@ -25,5 +38,10 @@ const getBadRequestError = message => {
 module.exports = {
 	getNotFoundError,
 	getForbiddenError,
-	getBadRequestError
+	getBadRequestError,
+	getValidationError,
+	ERR_NOT_FOUND,
+	ERR_FORBIDDEN,
+	ERR_BAD_REQUEST,
+	ERR_VALIDATOR
 };
