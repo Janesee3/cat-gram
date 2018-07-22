@@ -1,7 +1,7 @@
 const ERR_NOT_FOUND = "NotFoundError";
 const ERR_FORBIDDEN = "ForbiddenError";
 const ERR_BAD_REQUEST = "BadRequestError";
-const ERR_VALIDATOR = "ValidationError";
+const ERR_VALIDATION = "ValidationError";
 
 const getNotFoundError = message => {
 	let error = {
@@ -29,7 +29,7 @@ const getBadRequestError = message => {
 
 const getValidationError = message => {
 	let error = {
-		name: ERR_VALIDATOR,
+		name: ERR_VALIDATION,
 		message: message
 	};
 	return error;
@@ -43,5 +43,5 @@ module.exports = {
 	ERR_NOT_FOUND,
 	ERR_FORBIDDEN,
 	ERR_BAD_REQUEST,
-	ERR_VALIDATOR
+	ERR_VALIDATION
 };
