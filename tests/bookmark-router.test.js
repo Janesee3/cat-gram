@@ -86,18 +86,6 @@ describe("POST /bookmarks/addToBookmarks", () => {
 		expect(user.bookmarked.length).toBe(0);
 	});
 
-	it("should return status 403 if specified userId and auth token does not tally", async () => {
-		let response = await _addPostToBookmarks(
-			mockPosts.post1._id,
-			mockPosts.post1._id,
-			token
-		);
-
-		expect(response.status).toBe(403);
-		let user = await User.findById(authenticatedUser._id);
-		expect(user.bookmarked.length).toBe(0);
-	});
-
 	it("should return status 404 if specified postId does not exists", async () => {
 		let response = await _addPostToBookmarks(
 			"5b4f017bd72ad60014396ffd",
@@ -162,24 +150,6 @@ describe("POST /bookmarks/removeFromBookmarks", () => {
 		);
 
 		expect(response.status).toBe(401);
-		let user = await User.findById(authenticatedUser._id);
-		expect(user.bookmarked.length).toBe(1);
-	});
-
-	it("should return status 403 if specified userId and auth token does not tally", async () => {
-		await _addPostToBookmarks(
-			mockPosts.post1._id,
-			authenticatedUser._id,
-			token
-		);
-
-		let response = await _removePostFromBookmarks(
-			mockPosts.post1._id,
-			mockUsers.user1._id,
-			token
-		);
-
-		expect(response.status).toBe(403);
 		let user = await User.findById(authenticatedUser._id);
 		expect(user.bookmarked.length).toBe(1);
 	});

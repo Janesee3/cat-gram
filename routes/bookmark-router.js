@@ -14,45 +14,37 @@ const POST_NOT_BOOKMARKED_MSG = "Cannot find post in user's bookmarked list!";
 
 const router = express.Router();
 
-router.post(
-	"/addToBookmarks",
-	isUserAuthorisedForBookmarkAction,
-	async (req, res, next) => {
-		try {
-			let post = await Post.findById(req.body.postId);
-			let user = await User.findById(req.body.userId);
+router.post("/addToBookmarks", async (req, res, next) => {
+	try {
+		let post = await Post.findById(req.body.postId);
+		let user = await User.findById(req.user._id);
 
-			if (!post) return next(getNotFoundError(POST_NOT_FOUND_MSG));
+		if (!post) return next(getNotFoundError(POST_NOT_FOUND_MSG));
 
-			user = await addPostToBookmarksAndSave(post, user);
-			res.json(user);
-		} catch (err) {
-			next(err);
-		}
+		user = await addPostToBookmarksAndSave(post, user);
+		res.json(user.toDisplay());
+	} catch (err) {
+		next(err);
 	}
-);
+});
 
-router.post(
-	"/removeFromBookmarks",
-	isUserAuthorisedForBookmarkAction,
-	async (req, res, next) => {
-		try {
-			let post = await Post.findById(req.body.postId);
-			let user = await User.findById(req.body.userId);
+router.post("/removeFromBookmarks", async (req, res, next) => {
+	try {
+		let post = await Post.findById(req.body.postId);
+		let user = await User.findById(req.user._id);
 
-			if (!post) return next(getNotFoundError(POST_NOT_FOUND_MSG));
+		if (!post) return next(getNotFoundError(POST_NOT_FOUND_MSG));
 
-			if (!hasUserBookmarkedPost(post, user)) {
-				return next(getBadRequestError(POST_NOT_BOOKMARKED_MSG));
-			}
-
-			user = await removePostFromBookmarksAndSave(post, user);
-			res.json(user);
-		} catch (err) {
-			next(err);
+		if (!hasUserBookmarkedPost(post, user)) {
+			return next(getBadRequestError(POST_NOT_BOOKMARKED_MSG));
 		}
+
+		user = await removePostFromBookmarksAndSave(post, user);
+		res.json(user.toDisplay());
+	} catch (err) {
+		next(err);
 	}
-);
+});
 
 const addPostToBookmarksAndSave = async (post, user) => {
 	user.bookmarked.push(post._id.toString());
