@@ -1,5 +1,4 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const { passport } = require("./config/passport");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./swagger.json");
@@ -11,12 +10,6 @@ const userRouter = require("./routes/user-router");
 const bookmarkRouter = require("./routes/bookmark-router");
 const likesRouter = require("./routes/likes-router");
 
-// Open DB connection
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/cat-gram");
-const db = mongoose.connection;
-db.on("error", error => {
-	console.error("An error occurred!", error);
-});
 
 const app = express();
 
